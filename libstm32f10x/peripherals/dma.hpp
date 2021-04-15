@@ -1,6 +1,6 @@
 #pragma once
 
-#include <libstm32f1xx/platform/stm32f10x.h>
+#include <libstm32f10x/platform/stm32f10x.h>
 #include <libcore/utility/math/bit.hpp>
 
 namespace sjsu::stm32f10x

@@ -5,7 +5,7 @@
 #include <numeric>
 #include <thread>
 
-#include <libstm32f1xx/platform/stm32f10x.h>
+#include <libstm32f10x/platform/stm32f10x.h>
 #include <libcore/testing/testing_frameworks.hpp>
 #include <libcore/utility/math/units.hpp>
 

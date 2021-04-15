@@ -1,12 +1,12 @@
-#include <libstm32f1xx/platform/stm32f10x.h>
+#include <libstm32f10x/platform/stm32f10x.h>
 
 #include <libarmcortex/peripherals/interrupt.hpp>
 #include <libarmcortex/peripherals/system_timer.hpp>
 #include <libarmcortex/platform/exceptions.hpp>
 #include <libcore/platform/newlib.hpp>
 #include <libcore/utility/time/time.hpp>
-#include <libstm32f1xx/peripherals/gpio.hpp>
-#include <libstm32f1xx/peripherals/system_controller.hpp>
+#include <libstm32f10x/peripherals/gpio.hpp>
+#include <libstm32f10x/peripherals/system_controller.hpp>
 
 // The Interrupt vector table.
 // This relies on the linker script to place at correct location in memory.

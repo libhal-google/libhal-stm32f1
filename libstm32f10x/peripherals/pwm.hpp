@@ -1,12 +1,12 @@
 #pragma once
 
-#include <libstm32f1xx/platform/stm32f10x.h>
+#include <libstm32f10x/platform/stm32f10x.h>
 
 #include <libcore/peripherals/pwm.hpp>
 #include <libcore/peripherals/system_controller.hpp>
 #include <libcore/utility/math/bit.hpp>
-#include <libstm32f1xx/peripherals/gpio.hpp>
-#include <libstm32f1xx/platform/constants.hpp>
+#include <libstm32f10x/peripherals/gpio.hpp>
+#include <libstm32f10x/platform/constants.hpp>
 #include <utility>
 
 namespace sjsu::stm32f10x

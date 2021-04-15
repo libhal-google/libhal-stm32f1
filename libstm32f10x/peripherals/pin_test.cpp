@@ -1,8 +1,8 @@
-#include <libstm32f1xx/platform/stm32f10x.h>
+#include <libstm32f10x/platform/stm32f10x.h>
 
 #include <cstdint>
 #include <libcore/testing/testing_frameworks.hpp>
-#include <libstm32f1xx/peripherals/gpio.hpp>
+#include <libstm32f10x/peripherals/gpio.hpp>
 
 namespace sjsu::stm32f10x
 {
