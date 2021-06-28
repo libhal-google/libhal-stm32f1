@@ -67,8 +67,8 @@ TEST_CASE("Testing stm32f10x Pin")
   stm32f10x::Gpio pin_f0('F', 0);    // F
   stm32f10x::Gpio pin_g0('G', 0);    // G
 
-  auto power_up_matcher = [](sjsu::SystemController::ResourceID expected_id) {
-    return [expected_id](sjsu::SystemController::ResourceID actual_id) {
+  auto power_up_matcher = [](sjsu::ResourceID expected_id) {
+    return [expected_id](sjsu::ResourceID actual_id) {
       return expected_id.device_id == actual_id.device_id;
     };
   };

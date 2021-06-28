@@ -1,48 +1,178 @@
+/*
+  The Most Thoroughly Commented Linker Script in The World
+
+  This is a linker script for the Atmel/Microchip LPC40xx21
+  with an absolutely obscene amount of documentation.
+*/
+/*
+  OUTPUT_FORMAT configures the linker to use a platform-specific BFD
+  backend to generate ELF files. BFD backends instruct the linker on
+  how to properly create the ELF sections for a given platform.
+
+  The first is the default BFD. The second and third arguments are used
+  when big (-EB) or little (-EL) endian is requested.
+
+  Since the LPC40xx series are configured with only little endian support,
+  "elf32-littlearm" is used across the board. This option seems to be
+  included by Atmel/Microchip out of an abundance of caution, as
+  arm-none-eabi-ld will do the right thing and use "elf32-littlearm" by
+  default.
+
+  The list of acceptable values can be obtained using `objdump -i`.
+
+  References:
+  * https://sourceware.org/binutils/docs/ld/Format-Commands.html#Format-Commands
+  * https://sourceware.org/binutils/docs/ld/BFD.html
+  * https://ww1.microchip.com/downloads/en/DeviceDoc/SAM_D21_DA1_Family_DataSheet_DS40001882F.pdf
+    Section 11.1.11, Cortex M0+ Configuration
+*/
+OUTPUT_FORMAT("elf32-littlearm", "elf32-littlearm", "elf32-littlearm")
+
+/*
+  Memory space definition.
+
+  This section declare blocks of memories for specific purposes. Since an
+  ARM's address space is generally split between Flash, SRAM, peripherals,
+  and other regions, it's necessary to tell the linker where different
+  types of data can go in the address space.
+
+  These blocks will be used in the "SECTIONS" command below.
+
+  References:
+  * https://sourceware.org/binutils/docs/ld/MEMORY.html#MEMORY
+  * https://ww1.microchip.com/downloads/en/DeviceDoc/SAM_D21_DA1_Family_DataSheet_DS40001882F.pdf
+    Section 10.2, Physical Memory Map
+*/
 MEMORY
 {
   FLASH (rx) : ORIGIN = 0x08000000, LENGTH = 64k
   SRAM (rwx) : ORIGIN = 0x20000000, LENGTH = 20k
 }
 
-/* Program entry point */
+/* Delcare which function will be the program entry point */
 ENTRY(ArmResetHandler)
 
+/*
+  The sections command tells the linker how to combine the
+  input files into an output ELF and where segments belong
+  in memory.
+
+  The linker takes a set of input files containing the "input
+  sections" and uses this to map them to "output sections"
+  which are placed in the output ELF file.
+
+  While the most important sections to think about here
+  are the ones that'll be placed into the memory (segments)
+  some sections are just placed in the output ELF for debugging.
+
+  References:
+  * https://sourceware.org/binutils/docs/ld/SECTIONS.html#SECTIONS
+*/
 SECTIONS
 {
-  /* MAIN TEXT SECTION */
-  .text : ALIGN(4)
+  /*
+    The text segment contains program code and read-only data.
+
+    References:
+    * https://developer.arm.com/documentation/dui0101/a/
+      Page 5, Segments
+    * http://www.sco.com/developers/gabi/latest/ch4.sheader.html#special_sections
+  */
+  .text :
   {
-    FILL(0xff)
-    KEEP(*(.vector))
-
-    /* Global Section Table */
-    . = ALIGN(4) ;
-    section_table_start = .;
-    data_section_table = .;
-    LONG(LOADADDR(.data));
-    LONG(    ADDR(.data));
-    LONG(  SIZEOF(.data));
-    data_section_table_end = .;
-    bss_section_table = .;
-    __bss_start__ = .;
-    LONG(    ADDR(.bss));
-    LONG(  SIZEOF(.bss));
-    bss_section_table_end = .;
-    section_table_end = . ;
-    __bss_end__ = .;
-    /* End of Global Section Table */
-
-        /* Functions that are placed after the interrupt vector */
-    *(.after_vectors*)
-
-    *(.text*)
-    *(.rodata .rodata.*)
+    /*
+        This segment must be 4-byte aligned as defined in ARM ELF
+        File Format specification.
+    */
     . = ALIGN(4);
 
-    /* C++ constructors etc */
+    /*
+        The vector table defines the initial stack pointer and
+        interrupt/exception routines for the ARM CPU and device
+        peripherals. Every Cortex-M project needs this.
+
+        When defining the vector table in code you must use
+        `__attribute__ ((section(".vectors")))` to tell
+        GCC to place the vector table into the section
+        named ".vectors" in the input object file so that
+        the linker can find it.
+
+        Also notice the use of `KEEP` here. To save on size,
+        the firmware is compiled with options that let GCC
+        discard unused functions and data (`--gc-sections`).
+        Without `KEEP`, the linker would throw away the vector
+        table!
+
+        References:
+        * https://ww1.microchip.com/downloads/en/DeviceDoc/SAM_D21_DA1_Family_DataSheet_DS40001882F.pdf
+          Secion 8.3.3, Fetching of Initial Instructions
+        * https://static.docs.arm.com/ddi0403/eb/DDI0403E_B_armv7m_arm.pdf
+          Section B1.5.3, The vector table
+          Section B3.2.5, Vector Table Offset Register, VTOR
+        * https://gcc.gnu.org/onlinedocs/gnat_ugn/Compilation-options.html
+    */
+    _sfixed = .;
+    KEEP(*(.vectors .vectors.*))
+
+    /*
+        Include code and read-only data sections from all
+        input files.
+
+        By default, GCC places all program code into a section named
+        ".text" and read-only data (such as const static variables) into
+        a section named ".rodata" in the input object files. This naming
+        convention is from the ELF ABI specification.
+
+        GCC generates three "flavors" of sections in object files:
+
+        - .{section}: the basic section.
+        - .{section}.*: sections generated by "-ffunction-sections" and
+          "-fdata-sections" so that each function/data has a unique
+          section.
+        - .gnu.linkonce.{type}.*: sections generated by GCC so the
+          linker can remove duplicates. Seems to be related to
+          Vague Linking.
+
+        References:
+        * http://www.sco.com/developers/gabi/latest/ch4.sheader.html#special_sections
+        * https://gcc.gnu.org/onlinedocs/gcc/Vague-Linkage.html
+        * https://stackoverflow.com/questions/5518083/what-is-a-linkonce-section
+    */
+    *(.text .text.* .gnu.linkonce.t.*)
+    *(.rodata .rodata* .gnu.linkonce.r.*)
+
+    /*
+        The following sections support the C & C++ runtime.
+
+        These are generally used by crt0.
+
+        References:
+        * https://en.wikipedia.org/wiki/Crt0
+    */
+
+    /*
+        C++ Runtime: initializers for static variables.
+        C Runtime: designated constructors
+
+        For C++, handles variables at file scope like this:
+
+          int f = some_func()
+
+        For C, handles functions designated as constructors:
+
+          void intialize_thing(void) __attribute__((constructor));
+
+        Executed by the C runtime at startup via __libc_init_array.
+
+        References:
+        * https://github.com/gcc-mirror/gcc/blob/master/libgcc/crtstuff.c
+        * https://sourceware.org/git/?p=newlib-cygwin.git;a=blob;f=newlib/libc/misc/init.c;
+        * https://gcc.gnu.org/onlinedocs/gccint/Initialization.html
+        * https://developer.arm.com/documentation/dui0475/h/the-arm-c-and-c---libraries/c---initialization--construction-and-destruction
+        * https://stackoverflow.com/questions/15265295/understanding-the-libc-init-array
+    */
     . = ALIGN(4);
     KEEP(*(.init))
-
     . = ALIGN(4);
     __preinit_array_start = .;
     KEEP (*(.preinit_array))
@@ -54,78 +184,203 @@ SECTIONS
     KEEP (*(.init_array))
     __init_array_end = .;
 
-    KEEP(*(.fini));
+    /*
+        C++ runtime: destructors for static variables.
+        C runtime: designated finializers
 
+        For C, handles functions designated as destructors:
+
+          void destroy_thing(void) __attribute__((destructor));
+
+        References:
+        * https://sourceware.org/git/?p=newlib-cygwin.git;a=blob;f=newlib/libc/misc/fini.c
+    */
+    . = ALIGN(4);
+    KEEP(*(.fini))
+
+    . = ALIGN(4);
+    __fini_array_start = .;
+    KEEP (*(.fini_array))
+    KEEP (*(SORT(.fini_array.*)))
+    __fini_array_end = .;
+
+    /*
+        C++ runtime: static constructors
+
+        References:
+        * https://gcc.gnu.org/onlinedocs/gccint/Initialization.html
+        * https://github.com/gcc-mirror/gcc/blob/master/libgcc/crtstuff.c
+    */
     . = ALIGN(4);
     KEEP (*crtbegin.o(.ctors))
     KEEP (*(EXCLUDE_FILE (*crtend.o) .ctors))
     KEEP (*(SORT(.ctors.*)))
     KEEP (*crtend.o(.ctors))
 
+    /*
+        C++ runtime: static destructors and atexit()
+
+        Note that in usual practice these aren't ever called because the program
+        doesn't exit - except when powered off or reset.
+
+        References:
+        * https://gcc.gnu.org/onlinedocs/gccint/Initialization.html
+        * https://github.com/gcc-mirror/gcc/blob/master/libgcc/crtstuff.c
+    */
     . = ALIGN(4);
     KEEP (*crtbegin.o(.dtors))
     KEEP (*(EXCLUDE_FILE (*crtend.o) .dtors))
     KEEP (*(SORT(.dtors.*)))
     KEEP (*crtend.o(.dtors))
 
-    . = ALIGN(4) ;
-    __symbol_table_start = .;
-        KEEP(*(.symbol_table))
-        __symbol_table_end = .;
-    /* End C++ */
+    . = ALIGN(4);
+    _efixed = .;
   } > FLASH
 
   /*
-   * for exception handling/unwind - some Newlib functions (in common
-   * with C++ and STDC++) use this.
-   */
-  .ARM.extab : ALIGN(4)
-  {
+    ARM defines several special sections for exception handling.
+
+    These are require for C++ and for C programs that try to
+    examine backtraces.
+
+    - exidx is used to contain index entries for stack unwinding.
+    - extab names sections containing exception unwinding information.
+
+    Essentially, each function that can throw an exception will
+    have entries in the exidx and extab sections.
+
+    References:
+    - https://developer.arm.com/documentation/ihi0038/b/
+    - https://stackoverflow.com/a/57463515
+  */
+  .ARM.extab : {
     *(.ARM.extab* .gnu.linkonce.armextab.*)
   } > FLASH
-  __exidx_start = .;
 
-  .ARM.exidx : ALIGN(4)
-  {
+  .ARM.exidx : {
+    PROVIDE(__exidx_start = .);
     *(.ARM.exidx* .gnu.linkonce.armexidx.*)
+    PROVIDE(__exidx_end = .);
   } > FLASH
-  __exidx_end = .;
 
-  _etext = .;
+  /*
+    The `.relocate` section includes mutable variables that have a
+    default value and specially marked functions that should execute
+    from RAM.
 
-  /* MAIN DATA SECTION */
-  .uninit_RESERVED : ALIGN(4)
+    This data is stored in ROM but is referenced from RAM. The
+    program/runtime must copy the data from ROM to RAM on reset,
+    hence, "relocate".
+
+    Performance sensitive/critical functions can also be placed in
+    RAM using this section:
+
+        #define RAMFUNC __attribute__((section(".ramfunc")))
+
+        void fast_function(void) RAMFUNC;
+
+    In other linker scripts you might see this named as the `.data`
+    section. That's what the ELF specification calls for, but the
+    Microchip-provided LPC40xx startup scripts expect `.relocate`.
+
+    This also sets the symbol `_etext` to the start of the relocation
+    segment in flash. The startup script copies the data starting at
+    `_etext` to `_srelocate` and ends when it reaches `_erelocate`.
+    The `_etext` name is a bit unfortunate since it's not the end of
+    the text segment, but rather the start of the read-only copy of the
+    relocate section in flash. If I wrote the startup script I would have
+    named these symbols differently.
+
+    References:
+    * http://www.sco.com/developers/gabi/latest/ch4.sheader.html#special_sections
+    * https://www.sourceware.org/binutils/docs/ld/Output-Section-LMA.html#Output-Section-LMA
+  */
+  .data :
   {
-    KEEP(*(.bss.$RESERVED*))
-  } > SRAM
-
-  .data : ALIGN(4)
-  {
-    FILL(0xff)
+    . = ALIGN(4);
     _data = .;
-    *(vtable)
-    *(.data*)
-    . = ALIGN(4) ;
-    _edata = .;
-  } > SRAM AT>FLASH
+    *(.ramfunc .ramfunc.*);
+    *(.data .data.*);
+    . = ALIGN(4);
+    _end_data = .;
+  } > SRAM AT> FLASH
 
-  /* MAIN BSS SECTION */
-  .bss : ALIGN(4)
+  PROVIDE(_data_size = SIZEOF(.data));
+  PROVIDE(_data_load  = LOADADDR(.data));
+  PROVIDE(_end_text  = LOADADDR(.data));
+
+  /*
+    The BSS section reserves RAM space for declared but uninitialized
+    variables.
+
+    This is zeroed out by the startup script. The start-up script
+    zeros out the area of RAM starting at `_szero` and ending at
+    `_ezero`.
+
+    This includes `COMMON` which is a bit of a legacy section. GCC
+    defaults to `-fno-common` these days so there shouldn't be
+    anything in there, but it's included for completeness.
+
+    References:
+    * http://www.sco.com/developers/gabi/latest/ch4.sheader.html#special_sections
+    * https://en.wikipedia.org/wiki/.bss
+    * https://gcc.gnu.org/onlinedocs/gcc/Code-Gen-Options.html
+      Section -fcommon
+  */
+  .bss (NOLOAD) :
   {
+    . = ALIGN(4);
     _bss = .;
-    *(.bss*)
+    *(.bss .bss.*)
     *(COMMON)
-    . = ALIGN(4) ;
-    _ebss = .;
-    PROVIDE(end = .);
+    . = ALIGN(4);
+    _end_bss = .;
   } > SRAM
 
-  /* Provide a symbol of the heap pointer to C/C++ code */
-  PROVIDE(heap = .);
-  PROVIDE(heap_end = ORIGIN(SRAM) + LENGTH(SRAM) - 32);
+  PROVIDE(_bss_size = SIZEOF(.bss));
 
-  /* Provide the start of the initial stack pointer
-   * Debugger and ISP may use 32-bytes of space?
-   */
-  PROVIDE(StackTop = ORIGIN(SRAM) + LENGTH(SRAM) - 32);
+  /*
+    Mark the end of the RAM and the start of unallocated space.
+
+    If the program uses the malloc and the heap, then `_heap_start`
+    can be used as the start of the heap. If the program doesn't
+    use the heap then the `_heap_start` symbol is unused and could
+    be removed. With `-specs=nano.specs`, the `_sbrk` syscall has
+    to be implemented for malloc to work:
+
+        extern int _heap_start;
+
+        void *_sbrk(int incr) {
+          static unsigned char *heap = NULL;
+          unsigned char *prev_heap;
+
+          if (heap == NULL) {
+              heap = (unsigned char *)&_heap_start;
+          }
+
+          prev_heap = heap;
+          heap += incr;
+
+          return prev_heap;
+        }
+
+    Another memory layout strategy is to place the stack at the end
+    of RAM and the heap after bss. That way the heap can grow upwards
+    towards the stack and the stack can grow downwards to the heap.
+    However, I'm not a big fan of that approach- it's possible for the
+    heap to overwrite the stack. Leaving the entire end of RAM available
+    as the heap works well for my purposes.
+
+    References:
+    * https://en.wikipedia.org/wiki/Sbrk
+    * https://interrupt.memfault.com/blog/boostrapping-libc-with-newlib
+    * https://embeddedartistry.com/blog/2017/02/15/implementing-malloc-first-fit-free-list/
+  */
+  /* Provide a symbol of the heap pointer to C/C++ code */
+  PROVIDE(_heap = .);
+  PROVIDE(_heap_end = ORIGIN(SRAM) + LENGTH(SRAM) - 32);
+  _end = . ;
+
+  /* Provide the start of the initial stack pointer */
+  PROVIDE(_stack_top = ORIGIN(SRAM) + LENGTH(SRAM) - 32);
 }

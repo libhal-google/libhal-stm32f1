@@ -70,7 +70,10 @@ class Gpio : public sjsu::Gpio
 
   /// @param port - must be a capitol letter from 'A' to 'G'
   /// @param pin - must be between 0 to 15
-  constexpr Gpio(uint8_t port, uint8_t pin) : sjsu::Gpio(port, pin) {}
+  constexpr Gpio(uint8_t port, uint8_t pin)
+      : port_number_(port), pin_number_(pin)
+  {
+  }
 
   void ModuleInitialize() override
   {
@@ -88,7 +91,7 @@ class Gpio : public sjsu::Gpio
     // Enable the usage of alternative pin configurations
     system.PowerUpPeripheral(kAFIO);
 
-    switch (GetPort())
+    switch (port_number_)
     {
       case 'A': system.PowerUpPeripheral(kGpioA); break;
       case 'B': system.PowerUpPeripheral(kGpioB); break;
@@ -207,7 +210,7 @@ class Gpio : public sjsu::Gpio
                           .To<uint32_t>();
 
     SetConfig(config);
-    Port()->ODR = bit::Insert(Port()->ODR, mapping.PxODR, GetPin());
+    Port()->ODR = bit::Insert(Port()->ODR, mapping.PxODR, pin_number_);
   }
 
   void SetDirection(Direction direction) override
@@ -230,23 +233,23 @@ class Gpio : public sjsu::Gpio
     if (output == State::kHigh)
     {
       // The first 16 bits of the register set the output state
-      Port()->BSRR = (1 << GetPin());
+      Port()->BSRR = (1 << pin_number_);
     }
     else
     {
       // The last 16 bits of the register reset the output state
-      Port()->BSRR = (1 << (GetPin() + 16));
+      Port()->BSRR = (1 << (pin_number_ + 16));
     }
   }
 
   void Toggle() override
   {
-    Port()->ODR = (Port()->ODR ^ (1 << GetPin()));
+    Port()->ODR = (Port()->ODR ^ (1 << pin_number_));
   }
 
   bool Read() override
   {
-    return bit::Read(Port()->IDR, GetPin());
+    return bit::Read(Port()->IDR, pin_number_);
   }
 
   /// The gpio interrupt handler that calls the attached interrupt callbacks.
@@ -274,19 +277,21 @@ class Gpio : public sjsu::Gpio
     DetachInterrupt();
 
     // Add callback to list of handlers
-    handlers[GetPin()] = callback;
+    handlers[pin_number_] = callback;
 
     if (edge == Edge::kBoth || edge == Edge::kRising)
     {
-      external_interrupt->RTSR = bit::Set(external_interrupt->RTSR, GetPin());
+      external_interrupt->RTSR =
+          bit::Set(external_interrupt->RTSR, pin_number_);
     }
     if (edge == Edge::kBoth || edge == Edge::kFalling)
     {
-      external_interrupt->FTSR = bit::Set(external_interrupt->FTSR, GetPin());
+      external_interrupt->FTSR =
+          bit::Set(external_interrupt->FTSR, pin_number_);
     }
 
     // Enable interrupts for this particular pin
-    external_interrupt->IMR = bit::Set(external_interrupt->IMR, GetPin());
+    external_interrupt->IMR = bit::Set(external_interrupt->IMR, pin_number_);
 
     // Fetch the external interrupt control register from the AFIO peripheral
     // There are 4 EXTICR registers which only use the first 16 bits of the
@@ -295,22 +300,22 @@ class Gpio : public sjsu::Gpio
     // ports A, B, ..., G.
     // Divide the pin number by 4 to select the EXTICR register in the array
     // to update.
-    volatile uint32_t * control = &afio->EXTICR[GetPin() / 4];
+    volatile uint32_t * control = &afio->EXTICR[pin_number_ / 4];
 
     // The location within the EXTICR[x] register for the port select
     // information
     auto interrupt_alternative_function_mask = bit::Mask{
-      .position = static_cast<uint32_t>((GetPin() * 4) % 16),
+      .position = static_cast<uint32_t>((pin_number_ * 4) % 16),
       .width    = 4,
     };
 
     // Assign the control port value, which is equal to the port value minus
     // 'A', thus A would be 0, B would be 1, etc.
     *control = bit::Insert(
-        *control, GetPort() - 'A', interrupt_alternative_function_mask);
+        *control, port_number_ - 'A', interrupt_alternative_function_mask);
 
     // Enable interrupts for this external interrupt line
-    switch (GetPin())
+    switch (pin_number_)
     {
       case 0:
         sjsu::InterruptController::GetPlatformController().Enable({
@@ -379,8 +384,10 @@ class Gpio : public sjsu::Gpio
     // EXTI15_10_IRQn can only be disabled if we know that no other pins need
     // that IRQ enabled. To simply the logic simply disabling falling edge or
     // rising edge detection is all that is needed.
-    external_interrupt->RTSR = bit::Clear(external_interrupt->RTSR, GetPin());
-    external_interrupt->FTSR = bit::Clear(external_interrupt->FTSR, GetPin());
+    external_interrupt->RTSR =
+        bit::Clear(external_interrupt->RTSR, pin_number_);
+    external_interrupt->FTSR =
+        bit::Clear(external_interrupt->FTSR, pin_number_);
   }
 
   ~Gpio()
@@ -392,7 +399,7 @@ class Gpio : public sjsu::Gpio
   /// Returns the a pointer the gpio port.
   GPIO_TypeDef * Port() const
   {
-    return gpio[GetPort() - 'A'];
+    return gpio[port_number_ - 'A'];
   }
 
   /// Returns a bit mask indicating where the config bits are in the config
@@ -400,7 +407,7 @@ class Gpio : public sjsu::Gpio
   bit::Mask Mask() const
   {
     return {
-      .position = static_cast<uint32_t>((GetPin() * 4) % 32),
+      .position = static_cast<uint32_t>((pin_number_ * 4) % 32),
       .width    = 4,
     };
   }
@@ -411,7 +418,7 @@ class Gpio : public sjsu::Gpio
   {
     volatile uint32_t * config = &Port()->CRL;
 
-    if (GetPin() > 7)
+    if (pin_number_ > 7)
     {
       config = &Port()->CRH;
     }
@@ -430,6 +437,9 @@ class Gpio : public sjsu::Gpio
   {
     *Config() = bit::Insert(*Config(), value, Mask());
   }
+
+  uint8_t port_number_;
+  uint8_t pin_number_;
 };
 
 template <int port, int pin_number>

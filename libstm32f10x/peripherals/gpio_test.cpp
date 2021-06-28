@@ -170,8 +170,8 @@ TEST_CASE("Testing stm32f10x Gpio")
 
   SECTION("Initialize()")
   {
-    auto power_up_matcher = [](sjsu::SystemController::ResourceID expected_id) {
-      return [expected_id](sjsu::SystemController::ResourceID actual_id) {
+    auto power_up_matcher = [](sjsu::ResourceID expected_id) {
+      return [expected_id](sjsu::ResourceID actual_id) {
         return expected_id.device_id == actual_id.device_id;
       };
     };

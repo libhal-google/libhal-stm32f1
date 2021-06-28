@@ -8,6 +8,7 @@
 #include <libcore/utility/math/units.hpp>
 #include <libstm32f10x/peripherals/dma.hpp>
 #include <libstm32f10x/peripherals/gpio.hpp>
+#include <libstm32f10x/platform/constants.hpp>
 
 namespace sjsu::stm32f10x
 {
@@ -46,7 +47,7 @@ class UartBase : public sjsu::Uart
 
     /// The ID of the UART peripheral to be used. This is used to enable the
     /// peripheral clock of th UART peripheral.
-    SystemController::ResourceID id;
+    ResourceID id;
 
     /// Address of the DMA channel for this UART. The STM32F10x UART does not
     /// have a FIFO or buffer of any sort, thus DMA is required for reasonable
@@ -181,7 +182,7 @@ class UartBase : public sjsu::Uart
 
     // Supply clock to UART
     system.PowerUpPeripheral(port_.id);
-    system.PowerUpPeripheral(SystemController::Peripherals::kDma1);
+    system.PowerUpPeripheral(kDma1);
 
     // Setup RX DMA channel
     const auto kDataAddress  = reinterpret_cast<intptr_t>(&port_.uart->DR);
@@ -373,15 +374,15 @@ inline Uart<queue_size> & GetUart()
 {
   if constexpr (port == 1)
   {
-    static auto & tx1 = GetPin<'A', 9>();
-    static auto & rx1 = GetPin<'A', 10>();
+    static auto & tx1 = GetGpio<'A', 9>();
+    static auto & rx1 = GetGpio<'A', 10>();
 
     /// Predefined port for UART1
     static const UartBase::Port_t kUartInfo = {
       .tx   = tx1,
       .rx   = rx1,
       .uart = USART1,
-      .id   = SystemController::Peripherals::kUsart1,
+      .id   = kUsart1,
       .dma  = DMA1_Channel5,
     };
 
@@ -390,15 +391,15 @@ inline Uart<queue_size> & GetUart()
   }
   else if constexpr (port == 2)
   {
-    static auto & rx2 = GetPin<'A', 3>();
-    static auto & tx2 = GetPin<'A', 2>();
+    static auto & rx2 = GetGpio<'A', 3>();
+    static auto & tx2 = GetGpio<'A', 2>();
 
     /// Predefined port for UART2
     static const UartBase::Port_t kUartInfo = {
       .tx   = tx2,
       .rx   = rx2,
       .uart = USART2,
-      .id   = SystemController::Peripherals::kUsart2,
+      .id   = kUsart2,
       .dma  = DMA1_Channel6,
     };
 
@@ -407,15 +408,15 @@ inline Uart<queue_size> & GetUart()
   }
   else if constexpr (port == 3)
   {
-    static auto & tx3 = GetPin<'B', 10>();
-    static auto & rx3 = GetPin<'B', 11>();
+    static auto & tx3 = GetGpio<'B', 10>();
+    static auto & rx3 = GetGpio<'B', 11>();
 
     /// Predefined port for UART3
     static const UartBase::Port_t kUartInfo = {
       .tx   = tx3,
       .rx   = rx3,
       .uart = USART3,
-      .id   = SystemController::Peripherals::kUsart3,
+      .id   = kUsart3,
       .dma  = DMA1_Channel3,
     };
 

@@ -272,9 +272,9 @@ inline Spi & GetSpi()
   if constexpr (port == 1)
   {
     // SPI1 pins
-    static auto & kMosi1 = sjsu::stm32f10x::GetPin<'A', 7>();
-    static auto & kMiso1 = sjsu::stm32f10x::GetPin<'A', 6>();
-    static auto & kSck1  = sjsu::stm32f10x::GetPin<'A', 5>();
+    static auto & kMosi1 = sjsu::stm32f10x::GetGpio<'A', 7>();
+    static auto & kMiso1 = sjsu::stm32f10x::GetGpio<'A', 6>();
+    static auto & kSck1  = sjsu::stm32f10x::GetGpio<'A', 5>();
 
     /// Definition for SPI bus 1 for STM32F10x
     static const Spi::Port_t kSpiInfo = {
@@ -291,9 +291,9 @@ inline Spi & GetSpi()
   else if constexpr (port == 2)
   {
     // SPI2 pins
-    static auto & kMosi2 = sjsu::stm32f10x::GetPin<'B', 15>();
-    static auto & kMiso2 = sjsu::stm32f10x::GetPin<'B', 14>();
-    static auto & kSck2  = sjsu::stm32f10x::GetPin<'B', 13>();
+    static auto & kMosi2 = sjsu::stm32f10x::GetGpio<'B', 15>();
+    static auto & kMiso2 = sjsu::stm32f10x::GetGpio<'B', 14>();
+    static auto & kSck2  = sjsu::stm32f10x::GetGpio<'B', 13>();
 
     /// Definition for SPI bus 2 for STM32F10x
     static const Spi::Port_t kSpiInfo = {

@@ -10,26 +10,27 @@
 
 // The Interrupt vector table.
 // This relies on the linker script to place at correct location in memory.
-[[gnu::section(".vector")]]
+[[gnu::section(".vectors")]]
 // NOLINTNEXTLINE(readability-identifier-naming)
 const sjsu::InterruptVectorAddress kInterruptVectorTable[16] = {
   // Core Level - CM3/4
-  &StackTop,               // 0, The initial stack pointer
-  ArmResetHandler,         // 1, The reset handler
-  ArmNMIHandler,           // 2, The NMI handler
-  ArmHardFaultHandler,     // 3, The hard fault handler
-  ArmMemoryManageHandler,  // 4, The MPU fault handler
-  ArmBusFaultHandler,      // 5, The bus fault handler
-  ArmUsageFaultHandler,    // 6, The usage fault handler
-  nullptr,                 // 7, Reserved
-  nullptr,                 // 8, Reserved
-  nullptr,                 // 9, Reserved
-  nullptr,                 // 10, Reserved
-  nullptr,                 // 11, SVCall handler
-  nullptr,                 // 12, Debug monitor handler
-  nullptr,                 // 13, Reserved
-  nullptr,                 // 14, PendSV Handler
-  ArmSystemTickHandler,    // 15, The SysTick handler
+  &_stack_top,      // 0, The initial stack pointer
+  ArmResetHandler,  // 1, The reset handler
+  ArmNMIHandler,    // 2, The NMI handler
+  reinterpret_cast<sjsu::InterruptVectorAddress>(
+      ArmHardFaultHandler),  // 3, The hard fault handler
+  ArmMemoryManageHandler,    // 4, The MPU fault handler
+  ArmBusFaultHandler,        // 5, The bus fault handler
+  ArmUsageFaultHandler,      // 6, The usage fault handler
+  nullptr,                   // 7, Reserved
+  nullptr,                   // 8, Reserved
+  nullptr,                   // 9, Reserved
+  nullptr,                   // 10, Reserved
+  nullptr,                   // 11, SVCall handler
+  nullptr,                   // 12, Debug monitor handler
+  nullptr,                   // 13, Reserved
+  nullptr,                   // 14, PendSV Handler
+  ArmSystemTickHandler,      // 15, The SysTick handler
   // Chip Level - stm32f10x
   // 0, Window WatchDog
   // 1, PVD through EXTI Line detection
