@@ -3,7 +3,6 @@
 #include <libstm32f10x/platform/stm32f10x.h>
 
 #include <cstdint>
-#include <libcore/peripherals/system_controller.hpp>
 #include <libcore/utility/enum.hpp>
 #include <libcore/utility/math/bit.hpp>
 #include <libstm32f10x/platform/constants.hpp>
@@ -755,9 +754,6 @@ inline void SetMaximumClockSpeed()
   // Set USB to divide by 1.5 which will give you 48 MHz which is needed for USB
   // usage.
   config.pll.usb.divider = SystemController::UsbDivider::kDivideBy1Point5;
-
-  // Initialize platform with new clock configuration settings.
-  sjsu::InitializePlatform();
 }
 
 /// Sets the clock rate for all clock systems to their maximum allowable by the
@@ -806,9 +802,6 @@ inline void SetMaximumClockSpeedUsingInternalOscillator()
   // Set USB to divide by 1.5 which will give you 48 MHz which is needed for USB
   // usage.
   config.pll.usb.divider = SystemController::UsbDivider::kDivideBy1Point5;
-
-  // Initialize platform with new clock configuration settings.
-  sjsu::InitializePlatform();
 }
 }  // namespace stm32f10x
 }  // namespace sjsu

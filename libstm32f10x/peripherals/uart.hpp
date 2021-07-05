@@ -16,7 +16,7 @@ namespace sjsu::stm32f10x
 /// Usart 1 will occupy DMA1 channel 5
 /// Usart 2 will occupy DMA1 channel 6
 /// Usart 3 will occupy DMA1 channel 3
-class UartBase : public sjsu::Uart
+class Uart : public sjsu::Uart
 {
  public:
   using sjsu::Uart::Read;
@@ -124,7 +124,7 @@ class UartBase : public sjsu::Uart
   /// @param port - reference to the port specification object
   /// @param buffer - reference to the array buffer to hold the received bytes
   template <size_t size>
-  UartBase(const Port_t & port, std::array<uint8_t, size> & buffer)
+  Uart(const Port_t & port, std::array<uint8_t, size> & buffer)
       : port_(port),
         read_pointer_(0),
         queue_(buffer.data()),
@@ -135,7 +135,7 @@ class UartBase : public sjsu::Uart
   /// @param port - reference to the port specification object
   /// @param buffer - pointer to the array buffer to hold the received bytes
   /// @param size - size of the buffer in bytes
-  UartBase(const Port_t & port, uint8_t * buffer, size_t size)
+  Uart(const Port_t & port, uint8_t * buffer, size_t size)
       : port_(port), read_pointer_(0), queue_(buffer), queue_size_(size)
   {
   }
@@ -144,13 +144,13 @@ class UartBase : public sjsu::Uart
   /// @param port - reference to the port specification object
   /// @param buffer - reference to the array buffer to hold the received bytes
   template <size_t size>
-  UartBase(const Port_t & port, uint8_t (&buffer)[size])
+  Uart(const Port_t & port, uint8_t (&buffer)[size])
       : port_(port), read_pointer_(0), queue_(buffer), queue_size_(size)
   {
   }
 
   /// Disables DMA channel, USART DMA receiver mode, and the UART peripheral
-  ~UartBase()
+  ~Uart()
   {
     // It is important to disable the DMA control of the UART peripheral after
     // destruction, as the queue_ member variable's address location may no
@@ -338,28 +338,6 @@ class UartBase : public sjsu::Uart
   size_t queue_size_;
 };
 
-/// Uart Driver for the stm32f10x platform.
-///
-/// @tparam - defaults to 32 bytes for the queue size. You can configure this
-///           for a higher or lower number of bytes. Note: that the larger this
-///           value, the larger this object's size is.
-template <size_t queue_size = 32>
-class Uart : public sjsu::stm32f10x::UartBase
-{
- public:
-  using sjsu::Uart::Read;
-  using sjsu::Uart::Write;
-
-  /// @param port - reference to the port specification object
-  explicit constexpr Uart(const sjsu::stm32f10x::UartBase::Port_t & port)
-      : sjsu::stm32f10x::UartBase(port, queue_), queue_{}
-  {
-  }
-
- private:
-  std::array<uint8_t, queue_size> queue_;
-};
-
 /// Get a stm32f10x UART peripheral
 ///
 /// @tparam port - which port number to use. Must be between 1 and 3.
@@ -367,10 +345,10 @@ class Uart : public sjsu::stm32f10x::UartBase
 /// UART is operating at a high baud rate, expects to have a large amount of
 /// data pushed to this device and may not be able to process it quickly, a
 /// large buffer for the queue size may be required.
-/// @return Uart<queue_size>& - reference to a statically allocated Uart object
+/// @return sjsu::Uart& - reference to a statically allocated Uart object
 /// with the port and queue_size as defined in the template parameters.
 template <int port, const size_t queue_size = 32>
-inline Uart<queue_size> & GetUart()
+inline sjsu::Uart & GetUart()
 {
   if constexpr (port == 1)
   {
@@ -378,7 +356,7 @@ inline Uart<queue_size> & GetUart()
     static auto & rx1 = GetGpio<'A', 10>();
 
     /// Predefined port for UART1
-    static const UartBase::Port_t kUartInfo = {
+    static const Uart::Port_t kUartInfo = {
       .tx   = tx1,
       .rx   = rx1,
       .uart = USART1,
@@ -386,7 +364,8 @@ inline Uart<queue_size> & GetUart()
       .dma  = DMA1_Channel5,
     };
 
-    static Uart<queue_size> uart(kUartInfo);
+    std::array<uint8_t, queue_size> buffer;
+    static Uart uart(kUartInfo, buffer);
     return uart;
   }
   else if constexpr (port == 2)
@@ -395,7 +374,7 @@ inline Uart<queue_size> & GetUart()
     static auto & tx2 = GetGpio<'A', 2>();
 
     /// Predefined port for UART2
-    static const UartBase::Port_t kUartInfo = {
+    static const Uart::Port_t kUartInfo = {
       .tx   = tx2,
       .rx   = rx2,
       .uart = USART2,
@@ -403,7 +382,8 @@ inline Uart<queue_size> & GetUart()
       .dma  = DMA1_Channel6,
     };
 
-    static Uart<queue_size> uart(kUartInfo);
+    std::array<uint8_t, queue_size> buffer;
+    static Uart uart(kUartInfo, buffer);
     return uart;
   }
   else if constexpr (port == 3)
@@ -412,7 +392,7 @@ inline Uart<queue_size> & GetUart()
     static auto & rx3 = GetGpio<'B', 11>();
 
     /// Predefined port for UART3
-    static const UartBase::Port_t kUartInfo = {
+    static const Uart::Port_t kUartInfo = {
       .tx   = tx3,
       .rx   = rx3,
       .uart = USART3,
@@ -420,7 +400,8 @@ inline Uart<queue_size> & GetUart()
       .dma  = DMA1_Channel3,
     };
 
-    static Uart<queue_size> uart(kUartInfo);
+    std::array<uint8_t, queue_size> buffer;
+    static Uart uart(kUartInfo, buffer);
     return uart;
   }
   else
