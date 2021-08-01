@@ -77,7 +77,7 @@ TEST_CASE("Testing stm32f10x Pin")
   {
     sjsu::Gpio & pin;
     GPIO_TypeDef & reg;
-    SystemController::ResourceID id;
+    sjsu::ResourceID id;
   };
 
   std::array<TestStruct_t, 12> test = {

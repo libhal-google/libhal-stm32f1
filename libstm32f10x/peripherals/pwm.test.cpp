@@ -1,4 +1,4 @@
-#include "peripherals/stm32f10x/pwm.hpp"
+#include "pwm.hpp"
 
 #include <libcore/testing/testing_frameworks.hpp>
 
@@ -8,8 +8,8 @@ TEST_CASE("Testing stm32f10x PWM")
 {
   static constexpr units::frequency::hertz_t kDummyClockRate = 8_MHz;
   Mock<SystemController> mock_controller;
-  Mock<sjsu::Pin> mock_pwm_pin;
-  Fake(Method(mock_pwm_pin, Pin::ModuleInitialize));
+  Mock<sjsu::Gpio> mock_pwm_pin;
+  Fake(Method(mock_pwm_pin, Gpio::ModuleInitialize));
 
   Fake(Method(mock_controller, SystemController::PowerUpPeripheral));
   When(Method(mock_controller, SystemController::GetClockRate))
@@ -97,7 +97,7 @@ TEST_CASE("Testing stm32f10x PWM")
         .Once();
     CHECK(prescalar == local_timer.PSC);
     CHECK(divider == local_timer.ARR);
-    Verify(Method(mock_pwm_pin, Pin::ModuleInitialize)).Once();
+    Verify(Method(mock_pwm_pin, Gpio::ModuleInitialize)).Once();
   }
 
   SECTION("SetDutyCycle()")

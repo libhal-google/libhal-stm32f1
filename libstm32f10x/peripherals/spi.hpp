@@ -4,7 +4,7 @@
 
 #include <libcore/peripherals/spi.hpp>
 #include <libcore/peripherals/system_controller.hpp>
-#include <libcore/utility/emum.hpp>
+#include <libcore/utility/enum.hpp>
 #include <libcore/utility/math/bit.hpp>
 #include <libstm32f10x/peripherals/gpio.hpp>
 #include <libstm32f10x/platform/constants.hpp>

@@ -1,4 +1,4 @@
-#include "peripherals/stm32f10x/spi.hpp"
+#include "spi.hpp"
 
 #include <cstdint>
 
