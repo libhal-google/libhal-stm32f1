@@ -1,4 +1,4 @@
-#include "peripherals/stm32f10x/system_controller.hpp"
+#include "system_controller.hpp"
 
 #include <array>
 #include <cstdint>
@@ -13,7 +13,7 @@ namespace sjsu::stm32f10x
 {
 TEST_CASE("Testing stm32f10x SystemController")
 {
-  std::array<const SystemController::ResourceID *, 10> id = {
+  std::array<const sjsu::ResourceID *, 10> id = {
     // AHB
     &stm32f10x::SystemController::Peripherals::kFlitf,
     &stm32f10x::SystemController::Peripherals::kCrc,
@@ -864,7 +864,7 @@ TEST_CASE("Testing stm32f10x SystemController")
 
       // Verify
       CHECK(0_Hz == test_subject.GetClockRate(
-                        SystemController::ResourceID::Define<0xFFFF>()));
+                        sjsu::ResourceID::Define<0xFFFF>()));
     }
   }
 

@@ -1,4 +1,4 @@
-#include "peripherals/stm32f10x/adc.hpp"
+#include "adc.hpp"
 
 #include <libcore/testing/testing_frameworks.hpp>
 
@@ -12,7 +12,7 @@ TEST_CASE("Testing stm32f10x ADC")
 
   SystemController::SetPlatformController(&mock_controller.get());
 
-  Mock<sjsu::Pin> mock_adc_pin;
+  Mock<sjsu::Gpio> mock_adc_pin;
   Fake(Method(mock_adc_pin, ModuleInitialize));
 
   DMA_Channel_TypeDef local_dma;
@@ -50,10 +50,8 @@ TEST_CASE("Testing stm32f10x ADC")
                   .Clear(Adc::Control2::kCalibration)
                   .Save();
             },
-        .polling_function =
-            [&test_subject, &mock_controller]() {
-              test_subject.ModuleInitialize();
-            },
+        .polling_function = [&test_subject, &mock_controller]()
+        { test_subject.ModuleInitialize(); },
         .release_function =
             [&local_adc]() {
               bit::Register(&local_adc.CR2)
@@ -64,10 +62,10 @@ TEST_CASE("Testing stm32f10x ADC")
 
     // Verify
     Verify(Method(mock_controller, PowerUpPeripheral)
-               .Using(SystemController::Peripherals::kAdc1))
+               .Using(sjsu::stm32f10x::kAdc1))
         .Once();
     Verify(Method(mock_controller, PowerUpPeripheral)
-               .Using(SystemController::Peripherals::kDma1))
+               .Using(sjsu::stm32f10x::kDma1))
         .Once();
 
     CHECK(Adc::RegularSequence::kRegisterSequence3 == local_adc.SQR3);
@@ -83,11 +81,6 @@ TEST_CASE("Testing stm32f10x ADC")
 
     Verify(Method(mock_adc_pin, ModuleInitialize)).Once();
     CHECK(mock_adc_pin.get().CurrentSettings().as_analog == true);
-  }
-
-  SECTION("ReferenceVoltage()")
-  {
-    // CHECK(test_subject.ReferenceVoltage() == 3.3_V);
   }
 
   SECTION("GetActiveBits()")

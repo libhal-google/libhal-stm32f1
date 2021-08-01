@@ -297,7 +297,7 @@ inline Pwm & GetPwm()
                 "stm31f10x only supports PWM channels from 0 to 4.");
 
   constexpr auto pair   = GetPwmPinPair(peripheral, channel);
-  static auto & pwm_pin = GetPin<pair.first, pair.second>();
+  static auto & pwm_pin = GetGpio<pair.first, pair.second>();
 
   if constexpr (peripheral == 1)
   {

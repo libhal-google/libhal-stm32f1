@@ -1,4 +1,4 @@
-#include "peripherals/stm32f10x/uart.hpp"
+#include "uart.hpp"
 
 #include <algorithm>
 #include <numeric>
@@ -16,11 +16,11 @@ TEST_CASE("Testing stm32f10x Uart")
   When(Method(mock_controller, GetClockRate)).AlwaysReturn(kDummyClockRate);
   SystemController::SetPlatformController(&mock_controller.get());
 
-  Mock<sjsu::Pin> mock_rx;
-  Mock<sjsu::Pin> mock_tx;
+  Mock<sjsu::Gpio> mock_rx;
+  Mock<sjsu::Gpio> mock_tx;
 
-  Fake(Method(mock_rx, Pin::ModuleInitialize));
-  Fake(Method(mock_tx, Pin::ModuleInitialize));
+  Fake(Method(mock_rx, Gpio::ModuleInitialize));
+  Fake(Method(mock_tx, Gpio::ModuleInitialize));
 
   DMA_Channel_TypeDef local_dma;
   USART_TypeDef local_usart;
@@ -192,8 +192,8 @@ TEST_CASE("Testing stm32f10x Uart")
     CHECK(mock_rx.get().CurrentSettings().resistor ==
           sjsu::PinSettings_t::Resistor::kPullUp);
     CHECK(mock_tx.get().CurrentSettings().function == 1);
-    Verify(Method(mock_rx, Pin::ModuleInitialize)).Once();
-    Verify(Method(mock_tx, Pin::ModuleInitialize)).Once();
+    Verify(Method(mock_rx, Gpio::ModuleInitialize)).Once();
+    Verify(Method(mock_tx, Gpio::ModuleInitialize)).Once();
 
     CHECK(receieve_queue.size() == local_dma.CNDTR);
     CHECK(data_address == local_dma.CPAR);

@@ -9,6 +9,7 @@
 #include <libcore/utility/time/time.hpp>
 #include <libstm32f10x/peripherals/dma.hpp>
 #include <libstm32f10x/peripherals/gpio.hpp>
+#include <libstm32f10x/platform/constants.hpp>
 #include <utility>
 
 namespace sjsu
@@ -207,14 +208,14 @@ class Adc final : public sjsu::Adc
     // Step 0. Check if the peripheral is already powered on. If it is, then
     //         this peripheral has already been initialized and should not be
     //         initialized again.
-    if (system.IsPeripheralPoweredUp(SystemController::Peripherals::kAdc1))
+    if (system.IsPeripheralPoweredUp(sjsu::stm32f10x::kAdc1))
     {
       return;
     }
 
     // Step 1. Power on Peripherals
-    system.PowerUpPeripheral(SystemController::Peripherals::kAdc1);
-    system.PowerUpPeripheral(SystemController::Peripherals::kDma1);
+    system.PowerUpPeripheral(sjsu::stm32f10x::kAdc1);
+    system.PowerUpPeripheral(sjsu::stm32f10x::kDma1);
 
     // Step 2. Set Power on ADC bit
     bit::Register(&adc1->CR2).Set(Control2::kAdcOn).Save();
@@ -334,7 +335,8 @@ inline Adc & GetAdc()
       GetPinBasedOnChannel<bounded_channel>();
   // Get pin using GetPin to generate compile time error if map is out of
   // bounds.
-  static Pin & channel_pin = GetPin<pin_values.first, pin_values.second>();
+  static sjsu::Gpio & channel_pin =
+      stm32f10x::GetGpio<pin_values.first, pin_values.second>();
 
   // Create a static const ADC channel info object
   static const Adc::Channel_t kChannelInfo = {
