@@ -1,0 +1,17 @@
+{
+  "version": "0.2",
+  "language": "en",
+  "words": [
+    "bitmanip",
+    "xstd",
+    "fcco",
+    "gpio",
+    "countr",
+    "emmc",
+    "spifi",
+    "sdram",
+    "NOLINT",
+    "DLAB",
+    "THRE"
+  ]
+}
