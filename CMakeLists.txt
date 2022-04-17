@@ -7,7 +7,6 @@ project(libstm32f10x VERSION 0.0.1 LANGUAGES CXX)
 add_library(${PROJECT_NAME} INTERFACE)
 target_include_directories(${PROJECT_NAME} INTERFACE include)
 target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_20)
-set_target_properties(${PROJECT_NAME} PROPERTIES CXX_EXTENSIONS OFF)
 
 install(TARGETS ${PROJECT_NAME}
   EXPORT ${PROJECT_NAME}
