@@ -3,7 +3,7 @@ from conans import ConanFile, CMake, tools
 
 class libstm32f10x_conan(ConanFile):
     name = "libstm32f10x"
-    version = "0.0.1"
+    version = "0.0.2"
     license = "Apache License Version 2.0"
     author = "Khalil Estell"
     url = "https://github.com/SJSU-Dev2/libstm32f10x"

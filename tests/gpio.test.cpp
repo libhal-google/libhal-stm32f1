@@ -1,41 +1,63 @@
 #include "gpio.hpp"
 
-#include <libcore/testing/testing_frameworks.hpp>
 #include <utility>
 
-namespace sjsu::stm32f10x
-{
-namespace
-{
+#include <libcore/testing/testing_frameworks.hpp>
+
+namespace sjsu::stm32f10x {
+namespace {
 sjsu::bit::Mask Mask4Bit(uint8_t pin_position)
 {
   return {
     .position = static_cast<uint32_t>(pin_position * 4),
-    .width    = 4,
+    .width = 4,
   };
 }
 
 IRQn GetIrqForPin(uint8_t pin)
 {
-  switch (pin)
-  {
-    case 0: return stm32f10x::EXTI0_IRQn; break;
-    case 1: return stm32f10x::EXTI1_IRQn; break;
-    case 2: return stm32f10x::EXTI2_IRQn; break;
-    case 3: return stm32f10x::EXTI3_IRQn; break;
-    case 4: return stm32f10x::EXTI4_IRQn; break;
-    case 5: [[fallthrough]];
-    case 6: [[fallthrough]];
-    case 7: [[fallthrough]];
-    case 8: [[fallthrough]];
-    case 9: return stm32f10x::EXTI9_5_IRQn; break;
-    case 10: [[fallthrough]];
-    case 11: [[fallthrough]];
-    case 12: [[fallthrough]];
-    case 13: [[fallthrough]];
-    case 14: [[fallthrough]];
-    case 15: return stm32f10x::EXTI15_10_IRQn; break;
-    default: return static_cast<stm32f10x::IRQn>(0xFFFF);
+  switch (pin) {
+    case 0:
+      return stm32f10x::EXTI0_IRQn;
+      break;
+    case 1:
+      return stm32f10x::EXTI1_IRQn;
+      break;
+    case 2:
+      return stm32f10x::EXTI2_IRQn;
+      break;
+    case 3:
+      return stm32f10x::EXTI3_IRQn;
+      break;
+    case 4:
+      return stm32f10x::EXTI4_IRQn;
+      break;
+    case 5:
+      [[fallthrough]];
+    case 6:
+      [[fallthrough]];
+    case 7:
+      [[fallthrough]];
+    case 8:
+      [[fallthrough]];
+    case 9:
+      return stm32f10x::EXTI9_5_IRQn;
+      break;
+    case 10:
+      [[fallthrough]];
+    case 11:
+      [[fallthrough]];
+    case 12:
+      [[fallthrough]];
+    case 13:
+      [[fallthrough]];
+    case 14:
+      [[fallthrough]];
+    case 15:
+      return stm32f10x::EXTI15_10_IRQn;
+      break;
+    default:
+      return static_cast<stm32f10x::IRQn>(0xFFFF);
   }
 }
 }  // namespace
@@ -78,99 +100,98 @@ TEST_CASE("Testing stm32f10x Gpio")
   Gpio::gpio[4] = &local_gpio_e;
   Gpio::gpio[5] = &local_gpio_f;
   Gpio::gpio[6] = &local_gpio_g;
-  Gpio::afio    = &local_afio;
+  Gpio::afio = &local_afio;
 
   Gpio::external_interrupt = &local_exti;
 
   struct TestStruct_t
   {
     std::pair<char, uint8_t> gpio;
-    GPIO_TypeDef & reg;
+    GPIO_TypeDef& reg;
     sjsu::ResourceID id;
   };
 
   std::array<TestStruct_t, 15> test = {
     TestStruct_t{
-        .gpio = std::make_pair('A', 0),  // A
-        .reg  = local_gpio_a,
-        .id   = stm32f10x::kGpioA,
+      .gpio = std::make_pair('A', 0),  // A
+      .reg = local_gpio_a,
+      .id = stm32f10x::kGpioA,
     },
     TestStruct_t{
-        .gpio = std::make_pair('A', 4),  // Middle of first half word
-        .reg  = local_gpio_a,
-        .id   = stm32f10x::kGpioA,
+      .gpio = std::make_pair('A', 4),  // Middle of first half word
+      .reg = local_gpio_a,
+      .id = stm32f10x::kGpioA,
     },
     TestStruct_t{
-        .gpio = std::make_pair('B', 0),  // B
-        .reg  = local_gpio_b,
-        .id   = stm32f10x::kGpioB,
+      .gpio = std::make_pair('B', 0),  // B
+      .reg = local_gpio_b,
+      .id = stm32f10x::kGpioB,
     },
     TestStruct_t{
-        .gpio = std::make_pair('B', 7),  // End of first half word
-        .reg  = local_gpio_b,
-        .id   = stm32f10x::kGpioB,
+      .gpio = std::make_pair('B', 7),  // End of first half word
+      .reg = local_gpio_b,
+      .id = stm32f10x::kGpioB,
     },
     TestStruct_t{
-        .gpio = std::make_pair('C', 0),  // C
-        .reg  = local_gpio_c,
-        .id   = stm32f10x::kGpioC,
+      .gpio = std::make_pair('C', 0),  // C
+      .reg = local_gpio_c,
+      .id = stm32f10x::kGpioC,
     },
     TestStruct_t{
-        .gpio = std::make_pair('C', 8),  // First of last half word
-        .reg  = local_gpio_c,
-        .id   = stm32f10x::kGpioC,
+      .gpio = std::make_pair('C', 8),  // First of last half word
+      .reg = local_gpio_c,
+      .id = stm32f10x::kGpioC,
     },
     TestStruct_t{
-        .gpio = std::make_pair('D', 0),  // D
-        .reg  = local_gpio_d,
-        .id   = stm32f10x::kGpioD,
+      .gpio = std::make_pair('D', 0),  // D
+      .reg = local_gpio_d,
+      .id = stm32f10x::kGpioD,
     },
     TestStruct_t{
-        .gpio = std::make_pair('D', 12),  // Middle of last half word
-        .reg  = local_gpio_d,
-        .id   = stm32f10x::kGpioD,
+      .gpio = std::make_pair('D', 12),  // Middle of last half word
+      .reg = local_gpio_d,
+      .id = stm32f10x::kGpioD,
     },
     TestStruct_t{
-        .gpio = std::make_pair('E', 0),  // E
-        .reg  = local_gpio_e,
-        .id   = stm32f10x::kGpioE,
+      .gpio = std::make_pair('E', 0),  // E
+      .reg = local_gpio_e,
+      .id = stm32f10x::kGpioE,
     },
     TestStruct_t{
-        .gpio = std::make_pair('E', 15),  // Last of last half word
-        .reg  = local_gpio_e,
-        .id   = stm32f10x::kGpioE,
+      .gpio = std::make_pair('E', 15),  // Last of last half word
+      .reg = local_gpio_e,
+      .id = stm32f10x::kGpioE,
     },
     TestStruct_t{
-        .gpio = std::make_pair('F', 0),  // F
-        .reg  = local_gpio_f,
-        .id   = stm32f10x::kGpioF,
+      .gpio = std::make_pair('F', 0),  // F
+      .reg = local_gpio_f,
+      .id = stm32f10x::kGpioF,
     },
     TestStruct_t{
-        .gpio = std::make_pair('G', 0),  // G
-        .reg  = local_gpio_g,
-        .id   = stm32f10x::kGpioG,
+      .gpio = std::make_pair('G', 0),  // G
+      .reg = local_gpio_g,
+      .id = stm32f10x::kGpioG,
     },
     TestStruct_t{
-        .gpio = std::make_pair('G', 1),  // G
-        .reg  = local_gpio_g,
-        .id   = stm32f10x::kGpioG,
+      .gpio = std::make_pair('G', 1),  // G
+      .reg = local_gpio_g,
+      .id = stm32f10x::kGpioG,
     },
     TestStruct_t{
-        .gpio = std::make_pair('G', 2),  // G
-        .reg  = local_gpio_g,
-        .id   = stm32f10x::kGpioG,
+      .gpio = std::make_pair('G', 2),  // G
+      .reg = local_gpio_g,
+      .id = stm32f10x::kGpioG,
     },
     TestStruct_t{
-        .gpio = std::make_pair('G', 3),  // G
-        .reg  = local_gpio_g,
-        .id   = stm32f10x::kGpioG,
+      .gpio = std::make_pair('G', 3),  // G
+      .reg = local_gpio_g,
+      .id = stm32f10x::kGpioG,
     },
   };
 
   SECTION("Initialize()")
   {
-    for (auto & test_subject : test)
-    {
+    for (auto& test_subject : test) {
       // Setup
       sjsu::stm32f10x::Gpio gpio(test_subject.gpio.first,
                                  test_subject.gpio.second);
@@ -183,18 +204,17 @@ TEST_CASE("Testing stm32f10x Gpio")
       // Verify: Should call Pin's Initialize method which simply calls
       //         PowerUpPeripheral()
       Verify(Method(mock_system_controller, PowerUpPeripheral)
-                 .Using(test_subject.id));
+               .Using(test_subject.id));
       mock_system_controller.ClearInvocationHistory();
     }
   }
 
   SECTION("SetDirection()")
   {
-    constexpr uint8_t kInputFloatingCode   = 0b0100;
+    constexpr uint8_t kInputFloatingCode = 0b0100;
     constexpr uint8_t kOutputFullSpeedCode = 0b0011;
 
-    for (auto & test_subject : test)
-    {
+    for (auto& test_subject : test) {
       // Setup
       sjsu::stm32f10x::Gpio gpio(test_subject.gpio.first,
                                  test_subject.gpio.second);
@@ -213,15 +233,14 @@ TEST_CASE("Testing stm32f10x Gpio")
       //           easier.
       uint64_t crh = test_subject.reg.CRH;
       uint64_t crl = test_subject.reg.CRL;
-      uint64_t cr  = (crh << 32) | crl;
+      uint64_t cr = (crh << 32) | crl;
 
       // Verify
       CHECK(kInputFloatingCode ==
             bit::Extract(cr, Mask4Bit(test_subject.gpio.second)));
     }
 
-    for (auto & test_subject : test)
-    {
+    for (auto& test_subject : test) {
       // Setup
       sjsu::stm32f10x::Gpio gpio(test_subject.gpio.first,
                                  test_subject.gpio.second);
@@ -240,7 +259,7 @@ TEST_CASE("Testing stm32f10x Gpio")
       //           information.
       uint64_t crh = test_subject.reg.CRH;
       uint64_t crl = test_subject.reg.CRL;
-      uint64_t cr  = (crh << 32) | crl;
+      uint64_t cr = (crh << 32) | crl;
 
       // Verify
       CHECK(kOutputFullSpeedCode ==
@@ -249,8 +268,7 @@ TEST_CASE("Testing stm32f10x Gpio")
   }
   SECTION("Set()")
   {
-    for (auto & test_subject : test)
-    {
+    for (auto& test_subject : test) {
       // Setup
       sjsu::stm32f10x::Gpio gpio(test_subject.gpio.first,
                                  test_subject.gpio.second);
@@ -267,8 +285,7 @@ TEST_CASE("Testing stm32f10x Gpio")
       CHECK((1 << (test_subject.gpio.second + 16)) == test_subject.reg.BSRR);
     }
 
-    for (auto & test_subject : test)
-    {
+    for (auto& test_subject : test) {
       // Setup
       sjsu::stm32f10x::Gpio gpio(test_subject.gpio.first,
                                  test_subject.gpio.second);
@@ -288,8 +305,7 @@ TEST_CASE("Testing stm32f10x Gpio")
 
   SECTION("Toggle()")
   {
-    for (auto & test_subject : test)
-    {
+    for (auto& test_subject : test) {
       // Setup
       sjsu::stm32f10x::Gpio gpio(test_subject.gpio.first,
                                  test_subject.gpio.second);
@@ -301,11 +317,11 @@ TEST_CASE("Testing stm32f10x Gpio")
       gpio.Toggle();
 
       bool should_be_set =
-          bit::Read(test_subject.reg.ODR, test_subject.gpio.second);
+        bit::Read(test_subject.reg.ODR, test_subject.gpio.second);
 
       gpio.Toggle();
       bool should_be_cleared =
-          bit::Read(test_subject.reg.ODR, test_subject.gpio.second);
+        bit::Read(test_subject.reg.ODR, test_subject.gpio.second);
 
       // Verify
       CHECK(should_be_set == true);
@@ -320,10 +336,8 @@ TEST_CASE("Testing stm32f10x Gpio")
       0xAAAA'AAAA,
     };
 
-    for (uint32_t i = 0; i < kIdr.size(); i++)
-    {
-      for (auto & test_subject : test)
-      {
+    for (uint32_t i = 0; i < kIdr.size(); i++) {
+      for (auto& test_subject : test) {
         test_subject.reg.IDR = kIdr[i];
         // Setup
         sjsu::stm32f10x::Gpio gpio(test_subject.gpio.first,
@@ -334,7 +348,7 @@ TEST_CASE("Testing stm32f10x Gpio")
 
         // Setup: Initialize output register as all 1s
         bool expected_read =
-            bit::Read(test_subject.reg.IDR, test_subject.gpio.second);
+          bit::Read(test_subject.reg.IDR, test_subject.gpio.second);
 
         // Exercise + Verify
         CHECK(expected_read == gpio.Read());

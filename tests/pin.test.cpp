@@ -1,18 +1,17 @@
-#include <libstm32f10x/platform/stm32f10x.h>
-
-#include <cstdint>
-#include <libcore/testing/testing_frameworks.hpp>
 #include <libstm32f10x/peripherals/gpio.hpp>
 
-namespace sjsu::stm32f10x
-{
-namespace
-{
-bit::Mask Mask4Bit(const sjsu::Gpio & pin)
+#include <cstdint>
+
+#include <libcore/testing/testing_frameworks.hpp>
+#include <libstm32f10x/platform/stm32f10x.h>
+
+namespace sjsu::stm32f10x {
+namespace {
+bit::Mask Mask4Bit(const sjsu::Gpio& pin)
 {
   return {
     .position = static_cast<uint32_t>(pin.GetPin() * 4),
-    .width    = 4,
+    .width = 4,
   };
 }
 }  // namespace
@@ -52,7 +51,7 @@ TEST_CASE("Testing stm32f10x Pin")
   Gpio::gpio[4] = &local_gpio_e;
   Gpio::gpio[5] = &local_gpio_f;
   Gpio::gpio[6] = &local_gpio_g;
-  Gpio::afio    = &local_afio;
+  Gpio::afio = &local_afio;
 
   stm32f10x::Gpio pin_a0('A', 0);    // A
   stm32f10x::Gpio pin_a4('A', 4);    // Middle of first half word
@@ -75,90 +74,89 @@ TEST_CASE("Testing stm32f10x Pin")
 
   struct TestStruct_t
   {
-    sjsu::Gpio & pin;
-    GPIO_TypeDef & reg;
+    sjsu::Gpio& pin;
+    GPIO_TypeDef& reg;
     sjsu::ResourceID id;
   };
 
   std::array<TestStruct_t, 12> test = {
     TestStruct_t{
-        // 0
-        .pin = pin_a0,
-        .reg = local_gpio_a,
-        .id  = stm32f10x::SystemController::Peripherals::kGpioA,
+      // 0
+      .pin = pin_a0,
+      .reg = local_gpio_a,
+      .id = stm32f10x::SystemController::Peripherals::kGpioA,
     },
     TestStruct_t{
-        // 1
-        .pin = pin_a4,
-        .reg = local_gpio_a,
-        .id  = stm32f10x::SystemController::Peripherals::kGpioA,
+      // 1
+      .pin = pin_a4,
+      .reg = local_gpio_a,
+      .id = stm32f10x::SystemController::Peripherals::kGpioA,
     },
     TestStruct_t{
-        // 2
-        .pin = pin_b0,
-        .reg = local_gpio_b,
-        .id  = stm32f10x::SystemController::Peripherals::kGpioB,
+      // 2
+      .pin = pin_b0,
+      .reg = local_gpio_b,
+      .id = stm32f10x::SystemController::Peripherals::kGpioB,
     },
     TestStruct_t{
-        // 3
-        .pin = pin_b7,
-        .reg = local_gpio_b,
-        .id  = stm32f10x::SystemController::Peripherals::kGpioB,
+      // 3
+      .pin = pin_b7,
+      .reg = local_gpio_b,
+      .id = stm32f10x::SystemController::Peripherals::kGpioB,
     },
     TestStruct_t{
-        // 4
-        .pin = pin_c0,
-        .reg = local_gpio_c,
-        .id  = stm32f10x::SystemController::Peripherals::kGpioC,
+      // 4
+      .pin = pin_c0,
+      .reg = local_gpio_c,
+      .id = stm32f10x::SystemController::Peripherals::kGpioC,
     },
     TestStruct_t{
-        // 5
-        .pin = pin_c8,
-        .reg = local_gpio_c,
-        .id  = stm32f10x::SystemController::Peripherals::kGpioC,
+      // 5
+      .pin = pin_c8,
+      .reg = local_gpio_c,
+      .id = stm32f10x::SystemController::Peripherals::kGpioC,
     },
     TestStruct_t{
-        // 6
-        .pin = pin_d0,
-        .reg = local_gpio_d,
-        .id  = stm32f10x::SystemController::Peripherals::kGpioD,
+      // 6
+      .pin = pin_d0,
+      .reg = local_gpio_d,
+      .id = stm32f10x::SystemController::Peripherals::kGpioD,
     },
     TestStruct_t{
-        // 7
-        .pin = pin_d12,
-        .reg = local_gpio_d,
-        .id  = stm32f10x::SystemController::Peripherals::kGpioD,
+      // 7
+      .pin = pin_d12,
+      .reg = local_gpio_d,
+      .id = stm32f10x::SystemController::Peripherals::kGpioD,
     },
     TestStruct_t{
-        // 8
-        .pin = pin_e0,
-        .reg = local_gpio_e,
-        .id  = stm32f10x::SystemController::Peripherals::kGpioE,
+      // 8
+      .pin = pin_e0,
+      .reg = local_gpio_e,
+      .id = stm32f10x::SystemController::Peripherals::kGpioE,
     },
     TestStruct_t{
-        // 9
-        .pin = pin_e15,
-        .reg = local_gpio_e,
-        .id  = stm32f10x::SystemController::Peripherals::kGpioE,
+      // 9
+      .pin = pin_e15,
+      .reg = local_gpio_e,
+      .id = stm32f10x::SystemController::Peripherals::kGpioE,
     },
     TestStruct_t{
-        // 10
-        .pin = pin_f0,
-        .reg = local_gpio_f,
-        .id  = stm32f10x::SystemController::Peripherals::kGpioF,
+      // 10
+      .pin = pin_f0,
+      .reg = local_gpio_f,
+      .id = stm32f10x::SystemController::Peripherals::kGpioF,
     },
     TestStruct_t{
-        // 11
-        .pin = pin_g0,
-        .reg = local_gpio_g,
-        .id  = stm32f10x::SystemController::Peripherals::kGpioG,
+      // 11
+      .pin = pin_g0,
+      .reg = local_gpio_g,
+      .id = stm32f10x::SystemController::Peripherals::kGpioG,
     },
   };
 
   SECTION("Initialize()")
   {
-    for (size_t i = 0; i < test.size(); i++)
-    {
+    for (size_t i = 0; i < test.size(); i++) {
       // Setup
       INFO("Failure on test index: " << i);
 
@@ -167,7 +165,7 @@ TEST_CASE("Testing stm32f10x Pin")
 
       // Verify
       Verify(Method(mock_system_controller, PowerUpPeripheral)
-                 .Matching(power_up_matcher(test[i].id)));
+               .Matching(power_up_matcher(test[i].id)));
       // Cleanup
       mock_system_controller.ClearInvocationHistory();
     }
@@ -179,8 +177,7 @@ TEST_CASE("Testing stm32f10x Pin")
     {
       constexpr uint8_t kGpioFullSpeedCode = 0b0011;
 
-      for (size_t i = 0; i < test.size(); i++)
-      {
+      for (size_t i = 0; i < test.size(); i++) {
         INFO("Set as GPIO: Failure on test index: " << i);
         // Setup
         // Setup: Fill with 1s so that by setting it to input they get replaced
@@ -196,7 +193,7 @@ TEST_CASE("Testing stm32f10x Pin")
         //           extraction easier.
         uint64_t crh = test[i].reg.CRH;
         uint64_t crl = test[i].reg.CRL;
-        uint64_t cr  = (crh << 32) | crl;
+        uint64_t cr = (crh << 32) | crl;
 
         // Verify
         CHECK(kGpioFullSpeedCode == bit::Extract(cr, Mask4Bit(test[i].pin)));
@@ -207,8 +204,7 @@ TEST_CASE("Testing stm32f10x Pin")
     {
       constexpr uint8_t kAlternativeFullSpeedCode = 0b1011;
 
-      for (size_t i = 0; i < test.size(); i++)
-      {
+      for (size_t i = 0; i < test.size(); i++) {
         INFO("Set as Alternative: Failure on test index: " << i);
         // Setup
         // Setup: Fill with 1s so that by setting it to input they get replaced
@@ -224,7 +220,7 @@ TEST_CASE("Testing stm32f10x Pin")
         //           extraction easier.
         uint64_t crh = test[i].reg.CRH;
         uint64_t crl = test[i].reg.CRL;
-        uint64_t cr  = (crh << 32) | crl;
+        uint64_t cr = (crh << 32) | crl;
 
         // Verify
         CHECK(bit::Extract(cr, Mask4Bit(test[i].pin)) ==
@@ -234,8 +230,7 @@ TEST_CASE("Testing stm32f10x Pin")
 
     SECTION("Invalid function")
     {
-      for (size_t i = 0; i < test.size(); i++)
-      {
+      for (size_t i = 0; i < test.size(); i++) {
         // Exercise & Verify
         test[i].pin.settings.function = 3;
         SJ2_CHECK_EXCEPTION(test[i].pin.Initialize(),
@@ -247,10 +242,9 @@ TEST_CASE("Testing stm32f10x Pin")
   SECTION("ConfigurePullResistor()")
   {
     constexpr uint8_t kPullDownCode = 0b1000;
-    constexpr uint8_t kFloating     = 0b0011;
+    constexpr uint8_t kFloating = 0b0011;
 
-    for (size_t i = 0; i < test.size(); i++)
-    {
+    for (size_t i = 0; i < test.size(); i++) {
       // Setup
       INFO("Failure on test index: " << i);
       // Setup: Fill with 1s so that by setting it to input they get replaced
@@ -268,7 +262,7 @@ TEST_CASE("Testing stm32f10x Pin")
         //           extraction easier.
         uint64_t crh = test[i].reg.CRH;
         uint64_t crl = test[i].reg.CRL;
-        uint64_t cr  = (crh << 32) | crl;
+        uint64_t cr = (crh << 32) | crl;
 
         // Verify
         CHECK(kFloating == bit::Extract(cr, Mask4Bit(test[i].pin)));
@@ -284,7 +278,7 @@ TEST_CASE("Testing stm32f10x Pin")
         //           extraction easier.
         uint64_t crh = test[i].reg.CRH;
         uint64_t crl = test[i].reg.CRL;
-        uint64_t cr  = (crh << 32) | crl;
+        uint64_t cr = (crh << 32) | crl;
         uint32_t odr = test[i].reg.ODR;
 
         // Verify
@@ -302,7 +296,7 @@ TEST_CASE("Testing stm32f10x Pin")
         //           extraction easier.
         uint64_t crh = test[i].reg.CRH;
         uint64_t crl = test[i].reg.CRL;
-        uint64_t cr  = (crh << 32) | crl;
+        uint64_t cr = (crh << 32) | crl;
         uint32_t odr = test[i].reg.ODR;
 
         // Verify
@@ -316,10 +310,9 @@ TEST_CASE("Testing stm32f10x Pin")
   SECTION("ConfigureAsOpenDrain()")
   {
     constexpr uint32_t kOutputWithOpenDrain = 0b0111;
-    constexpr uint32_t kOutputWithPushPull  = 0b0011;
+    constexpr uint32_t kOutputWithPushPull = 0b0011;
 
-    for (size_t i = 0; i < test.size(); i++)
-    {
+    for (size_t i = 0; i < test.size(); i++) {
       // Setup
       INFO("Failure on test index: " << i);
 
@@ -331,7 +324,7 @@ TEST_CASE("Testing stm32f10x Pin")
 
         // Exercise
         test[i].pin.settings.open_drain = true;
-        test[i].pin.settings.function   = 0;
+        test[i].pin.settings.function = 0;
         test[i].pin.settings.Floating();
         test[i].pin.Initialize();
 
@@ -339,7 +332,7 @@ TEST_CASE("Testing stm32f10x Pin")
         //           extraction easier.
         uint64_t crh = test[i].reg.CRH;
         uint64_t crl = test[i].reg.CRL;
-        uint64_t cr  = (crh << 32) | crl;
+        uint64_t cr = (crh << 32) | crl;
         uint32_t odr = test[i].reg.ODR;
 
         // Verify
@@ -356,7 +349,7 @@ TEST_CASE("Testing stm32f10x Pin")
 
         // Exercise
         test[i].pin.settings.open_drain = false;
-        test[i].pin.settings.function   = 0;
+        test[i].pin.settings.function = 0;
         test[i].pin.settings.Floating();
         test[i].pin.Initialize();
 
@@ -364,7 +357,7 @@ TEST_CASE("Testing stm32f10x Pin")
         //           extraction easier.
         uint64_t crh = test[i].reg.CRH;
         uint64_t crl = test[i].reg.CRL;
-        uint64_t cr  = (crh << 32) | crl;
+        uint64_t cr = (crh << 32) | crl;
         uint32_t odr = test[i].reg.ODR;
 
         // Verify
@@ -378,8 +371,7 @@ TEST_CASE("Testing stm32f10x Pin")
   SECTION("ConfigureAsAnalogMode()")
   {
     constexpr uint8_t kAnalogCode = 0b0000;
-    for (size_t i = 0; i < test.size(); i++)
-    {
+    for (size_t i = 0; i < test.size(); i++) {
       // Setup
       INFO("Failure on test index: " << i);
 
@@ -398,7 +390,7 @@ TEST_CASE("Testing stm32f10x Pin")
         //           extraction easier.
         uint64_t crh = test[i].reg.CRH;
         uint64_t crl = test[i].reg.CRL;
-        uint64_t cr  = (crh << 32) | crl;
+        uint64_t cr = (crh << 32) | crl;
 
         // Verify
         CHECK(kAnalogCode == bit::Extract(cr, Mask4Bit(test[i].pin)));
@@ -416,8 +408,8 @@ TEST_CASE("Testing stm32f10x Pin")
 
     // Verify
     Verify(Method(mock_system_controller, PowerUpPeripheral)
-               .Matching(power_up_matcher(
-                   stm32f10x::SystemController::Peripherals::kAFIO)));
+             .Matching(power_up_matcher(
+               stm32f10x::SystemController::Peripherals::kAFIO)));
 
     // Set the JTAG Release
     CHECK(0b010 == sjsu::bit::Extract(local_afio.MAPR,
@@ -431,6 +423,6 @@ TEST_CASE("Testing stm32f10x Pin")
   Pin::gpio[4] = GPIOE;
   Pin::gpio[5] = GPIOF;
   Pin::gpio[6] = GPIOG;
-  Pin::afio    = AFIO;
+  Pin::afio = AFIO;
 }
 }  // namespace sjsu::stm32f10x

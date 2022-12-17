@@ -29,10 +29,23 @@ enable_testing()
 add_test(NAME ${TEST_NAME} WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
   COMMAND ${TEST_NAME})
 target_include_directories(${TEST_NAME} PUBLIC tests)
-target_compile_options(${TEST_NAME} PRIVATE -Werror -Wall -Wextra
-  -Wno-unused-function -Wconversion -g)
+target_compile_options(${PROJECT_NAME} PRIVATE
+  --coverage
+  -fprofile-arcs
+  -ftest-coverage
+  -Werror
+  -Wall
+  -Wextra
+  -Wshadow
+  -Wnon-virtual-dtor
+  -Wno-gnu-statement-expression
+  -pedantic)
 set_target_properties(${TEST_NAME} PROPERTIES CXX_VISIBILITY_PRESET default)
 target_compile_features(${TEST_NAME} PRIVATE cxx_std_20)
 set_target_properties(${TEST_NAME} PROPERTIES CXX_EXTENSIONS OFF)
+target_link_options(${PROJECT_NAME} PRIVATE
+  --coverage
+  -fprofile-arcs
+  -ftest-coverage)
 target_link_libraries(${TEST_NAME} PRIVATE boost::ut ${PROJECT_NAME}
   libarmcortex::libarmcortex nonstd::ring-span-lite)
