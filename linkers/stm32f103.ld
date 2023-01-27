@@ -4,4 +4,4 @@ __ram = 0x20000000;
 __ram_size = 20K;
 __stack_size = 1K;
 
-INCLUDE picolibcpp.ld
+INCLUDE "libhal-armcortex/standard.ld"

@@ -1,0 +1,18 @@
+name: ✅ Checks
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: '0 12 * * 0'
+
+jobs:
+  ci:
+    uses: libhal/libhal/.github/workflows/checks.yml@main
+    with:
+      library: libhal-stm32f10x
+      coverage: true
+    secrets: inherit
