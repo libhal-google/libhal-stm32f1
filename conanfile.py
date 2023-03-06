@@ -1,6 +1,6 @@
 from conan import ConanFile
+from conan.tools.cmake import CMake, cmake_layout
 from conan.tools.files import copy
-from conan.tools.layout import basic_layout
 from conan.tools.build import check_min_cppstd
 from conan.errors import ConanInvalidConfiguration
 import os
@@ -16,13 +16,11 @@ class libhalSTM32F10x_conan(ConanFile):
     description = ("Drivers for the stm32f10x series of microcontrollers using "
                     "libhal's abstractions.")
     topics = ("ARM", "microcontroller", "peripherals", "hardware", "stm32f10x")
-    settings = "compiler"
-    exports_sources = ("include/*", "linkers/*", "LICENSE")
+    settings = "compiler", "build_type", "os", "arch"
+    exports_sources = "include/*", "tests/*", "LICENSE"
+    generators = "CMakeToolchain", "CMakeDeps"
     no_copy_source = True
 
-    def package_id(self):
-        self.info.clear()
-    
     @property
     def _min_cppstd(self):
         return "20"
@@ -35,21 +33,15 @@ class libhalSTM32F10x_conan(ConanFile):
             "apple-clang": "14.0.0"
         }
 
-    def requirements(self):
-        self.requires("libhal/0.3.3@")
-        self.requires("libhal-util/0.3.7@")
-        self.requires("libhal-armcortex/0.3.8@")
-        self.requires("ring-span-lite/0.6.0")
-
     def validate(self):
         if self.settings.get_safe("compiler.cppstd"):
             check_min_cppstd(self, self._min_cppstd)
 
         def lazy_lt_semver(v1, v2):
-                lv1 = [int(v) for v in v1.split(".")]
-                lv2 = [int(v) for v in v2.split(".")]
-                min_length = min(len(lv1), len(lv2))
-                return lv1[:min_length] < lv2[:min_length]
+            lv1 = [int(v) for v in v1.split(".")]
+            lv2 = [int(v) for v in v2.split(".")]
+            min_length = min(len(lv1), len(lv2))
+            return lv1[:min_length] < lv2[:min_length]
 
         compiler = str(self.settings.compiler)
         version = str(self.settings.compiler.version)
@@ -59,12 +51,29 @@ class libhalSTM32F10x_conan(ConanFile):
             raise ConanInvalidConfiguration(
                 f"{self.name} {self.version} requires C++{self._min_cppstd}, which your compiler ({compiler}-{version}) does not support")
 
+    def requirements(self):
+        self.requires("libhal/[^1.0.0]")
+        self.requires("libhal-util/[^1.0.0]")
+        self.requires("libhal-armcortex/[^1.0.0]")
+        self.requires("ring-span-lite/0.6.0")
+        self.test_requires("boost-ext-ut/1.1.9")
+
     def layout(self):
-        basic_layout(self)
+        cmake_layout(self)
+    def build(self):
+        if not self.conf.get("tools.build:skip_test", default=False):
+            cmake = CMake(self)
+            if self.settings.os == "Windows":
+                cmake.configure(build_script_folder="tests")
+            else:
+                cmake.configure(build_script_folder="tests",
+                                variables={"ENABLE_ASAN": True})
+            cmake.build()
+            self.run(os.path.join(self.cpp.build.bindir, "unit_test"))
 
     def package(self):
         copy(self, "LICENSE", dst=os.path.join(
-            self.package_folder, "licenses"),  src=self.source_folder)
+            self.package_folder, "licenses"), src=self.source_folder)
         copy(self, "*.h", dst=os.path.join(self.package_folder, "include"),
              src=os.path.join(self.source_folder, "include"))
         copy(self, "*.hpp", dst=os.path.join(self.package_folder,
@@ -107,3 +116,5 @@ class libhalSTM32F10x_conan(ConanFile):
             self.cpp_info.components[component].cxxflags = flags
 
         create_component(self, "stm32f103", m4_architecture_flags)
+    def package_id(self):
+        self.info.clear()
