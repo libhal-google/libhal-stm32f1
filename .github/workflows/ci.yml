@@ -11,7 +11,7 @@ on:
 
 jobs:
   ci:
-    uses: libhal/libhal/.github/workflows/checks.yml@main
+    uses: libhal/ci/.github/workflows/library.yml@main
     with:
       library: libhal-stm32f10x
       coverage: true
