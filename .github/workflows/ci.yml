@@ -13,6 +13,6 @@ jobs:
   ci:
     uses: libhal/ci/.github/workflows/library.yml@main
     with:
-      library: libhal-stm32f10x
+      library: libhal-stm32
       coverage: true
     secrets: inherit

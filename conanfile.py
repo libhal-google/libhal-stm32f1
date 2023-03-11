@@ -7,13 +7,13 @@ import os
 
 required_conan_version = ">=1.50.0"
 
-class libhalSTM32F10x_conan(ConanFile):
-    name = "libhal-stm32f10x"
-    version = "0.0.1"
+class libhalSTMConan(ConanFile):
+    name = "libhal-stm32"
+    version = "0.0.2"
     license = "Apache-2.0"
     url = "https://github.com/conan-io/conan-center-index"
     homepage = "https://libhal.github.io/libhal-stm32f10x"
-    description = ("Drivers for the stm32f10x series of microcontrollers using "
+    description = ("Drivers for the stm series of microcontrollers using "
                     "libhal's abstractions.")
     topics = ("ARM", "microcontroller", "peripherals", "hardware", "stm32f10x")
     settings = "compiler", "build_type", "os", "arch"
