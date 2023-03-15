@@ -7,17 +7,18 @@ import os
 
 required_conan_version = ">=1.50.0"
 
+
 class libhalSTMConan(ConanFile):
     name = "libhal-stm32"
     version = "0.0.2"
     license = "Apache-2.0"
     url = "https://github.com/conan-io/conan-center-index"
-    homepage = "https://libhal.github.io/libhal-stm32f10x"
+    homepage = "https://libhal.github.io/libhal-stm32"
     description = ("Drivers for the stm series of microcontrollers using "
-                    "libhal's abstractions.")
-    topics = ("ARM", "microcontroller", "peripherals", "hardware", "stm32f10x")
+                   "libhal's abstractions.")
+    topics = ("ARM", "microcontroller", "peripherals", "hardware", "stm32")
     settings = "compiler", "build_type", "os", "arch"
-    exports_sources = "include/*", "tests/*", "LICENSE"
+    exports_sources = "include/*", "tests/*",  "linker_scripts/*", "LICENSE"
     generators = "CMakeToolchain", "CMakeDeps"
     no_copy_source = True
 
@@ -55,11 +56,11 @@ class libhalSTMConan(ConanFile):
         self.requires("libhal/[^1.0.0]")
         self.requires("libhal-util/[^1.0.0]")
         self.requires("libhal-armcortex/[^1.0.0]")
-        self.requires("ring-span-lite/0.6.0")
         self.test_requires("boost-ext-ut/1.1.9")
 
     def layout(self):
         cmake_layout(self)
+
     def build(self):
         if not self.conf.get("tools.build:skip_test", default=False):
             cmake = CMake(self)
@@ -72,49 +73,53 @@ class libhalSTMConan(ConanFile):
             self.run(os.path.join(self.cpp.build.bindir, "unit_test"))
 
     def package(self):
-        copy(self, "LICENSE", dst=os.path.join(
-            self.package_folder, "licenses"), src=self.source_folder)
-        copy(self, "*.h", dst=os.path.join(self.package_folder, "include"),
+        copy(self,
+             "LICENSE",
+             dst=os.path.join(self.package_folder, "licenses"),
+             src=self.source_folder)
+        copy(self,
+             "*.h",
+             dst=os.path.join(self.package_folder, "include"),
              src=os.path.join(self.source_folder, "include"))
-        copy(self, "*.hpp", dst=os.path.join(self.package_folder,
-             "include"), src=os.path.join(self.source_folder, "include"))
-        copy(self, "*.ld", dst=os.path.join(self.package_folder,
-             "linkers"), src=os.path.join(self.source_folder, "linkers"))
+        copy(self,
+             "*.hpp",
+             dst=os.path.join(self.package_folder, "include"),
+             src=os.path.join(self.source_folder, "include"))
+        copy(self,
+             "*.ld",
+             dst=os.path.join(self.package_folder, "linker_scripts"),
+             src=os.path.join(self.source_folder, "linker_scripts"))
 
     def package_info(self):
         requirements_list = ["libhal::libhal",
                              "libhal-util::libhal-util",
-                             "libhal-armcortex::libhal-armcortex",
-                             "ring-span-lite::ring-span-lite"]
+                             "libhal-armcortex::libhal-armcortex"]
 
-        m4_architecture_flags = [
-            "-mcpu=cortex-m4",
-            "-mthumb",
-            "-mfloat-abi=soft"
-        ]
+        m3_architecture_flags = ["-mcpu=cortex-m3", "-mfloat-abi=soft"]
 
-        linker_path = os.path.join(self.package_folder, "linkers")
+        linker_path = os.path.join(self.package_folder, "linker_scripts")
 
-        self.cpp_info.set_property("cmake_file_name", "libhal-stm32f10x")
+        self.cpp_info.set_property("cmake_file_name", "libhal-stm32")
         self.cpp_info.set_property("cmake_find_mode", "both")
 
-        self.cpp_info.components["stm32f10x"].set_property(
-            "cmake_target_name",  "libhal::stm32f10x")
-        self.cpp_info.components["stm32f10x"].exelinkflags.append(
+        self.cpp_info.components["stm32"].set_property(
+            "cmake_target_name",  "libhal::stm32")
+        self.cpp_info.components["stm32"].exelinkflags.append(
             "-L" + linker_path)
-        self.cpp_info.components["stm32f10x"].requires = requirements_list
+        self.cpp_info.components["stm32"].requires = requirements_list
 
         def create_component(self, component, flags):
-            link_script = "-Tlibhal-stm32f10x/" + component + ".ld"
+            link_script = "-Tlibhal-stm32/" + component + ".ld"
             component_name = "libhal::" + component
             self.cpp_info.components[component].set_property(
                 "cmake_target_name", component_name)
-            self.cpp_info.components[component].requires = ["stm32f10x"]
+            self.cpp_info.components[component].requires = ["stm32"]
             self.cpp_info.components[component].exelinkflags.append(link_script)
             self.cpp_info.components[component].exelinkflags.extend(flags)
             self.cpp_info.components[component].cflags = flags
             self.cpp_info.components[component].cxxflags = flags
 
-        create_component(self, "stm32f103", m4_architecture_flags)
+        create_component(self, "stm32f103", m3_architecture_flags)
+
     def package_id(self):
         self.info.clear()

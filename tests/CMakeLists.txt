@@ -29,7 +29,6 @@ find_package(ut REQUIRED CONFIG)
 find_package(libhal REQUIRED CONFIG)
 find_package(libhal-armcortex REQUIRED CONFIG)
 find_package(libhal-util REQUIRED CONFIG)
-find_package(ring-span-lite REQUIRED CONFIG)
 
 add_executable(${PROJECT_NAME}
   main.test.cpp
@@ -58,8 +57,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
   boost-ext-ut::ut
   libhal::libhal
   libhal::util
-  libhal::armcortex
-  nonstd::ring-span-lite)
+  libhal::armcortex)
 
 add_custom_command(TARGET ${PROJECT_NAME}
   POST_BUILD
