@@ -7,18 +7,18 @@
 namespace hal::stm32::f10x::internal {
 struct reset_and_clock_control_t
 {
-  volatile std::uint32_t CR;
-  volatile std::uint32_t CFGR;
-  volatile std::uint32_t CIR;
-  volatile std::uint32_t APB2RSTR;
-  volatile std::uint32_t APB1RSTR;
-  volatile std::uint32_t AHBENR;
-  volatile std::uint32_t APB2ENR;
-  volatile std::uint32_t APB1ENR;
-  volatile std::uint32_t BDCR;
-  volatile std::uint32_t CSR;
-  volatile std::uint32_t AHBRSTR;
-  volatile std::uint32_t CFGR2;
+  volatile std::uint32_t cr;
+  volatile std::uint32_t cfgr;
+  volatile std::uint32_t cir;
+  volatile std::uint32_t apb2rstr;
+  volatile std::uint32_t apb1rstr;
+  volatile std::uint32_t ahbenr;
+  volatile std::uint32_t apb2enr;
+  volatile std::uint32_t apb1enr;
+  volatile std::uint32_t bdcr;
+  volatile std::uint32_t csr;
+  volatile std::uint32_t ahbrstr;
+  volatile std::uint32_t cfgr2;
 };
 
 /**

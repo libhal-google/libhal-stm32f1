@@ -10,7 +10,7 @@ required_conan_version = ">=1.50.0"
 
 class libhalSTMConan(ConanFile):
     name = "libhal-stm32"
-    version = "0.1.0"
+    version = "0.2.0"
     license = "Apache-2.0"
     url = "https://github.com/conan-io/conan-center-index"
     homepage = "https://libhal.github.io/libhal-stm32"

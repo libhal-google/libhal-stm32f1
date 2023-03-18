@@ -28,21 +28,21 @@ public:
 
   struct flash_t
   {
-    volatile std::uint32_t ACR;
-    volatile std::uint32_t KEYR;
-    volatile std::uint32_t OPTKEYR;
-    volatile std::uint32_t SR;
-    volatile std::uint32_t CR;
-    volatile std::uint32_t AR;
-    volatile std::uint32_t RESERVED;
-    volatile std::uint32_t OBR;
-    volatile std::uint32_t WRPR;
-    std::array<uint32_t, 8> RESERVED1;
-    volatile std::uint32_t KEYR2;
-    uint32_t RESERVED2;
-    volatile std::uint32_t SR2;
-    volatile std::uint32_t CR2;
-    volatile std::uint32_t AR2;
+    volatile std::uint32_t acr;
+    volatile std::uint32_t keyr;
+    volatile std::uint32_t optkeyr;
+    volatile std::uint32_t sr;
+    volatile std::uint32_t cr;
+    volatile std::uint32_t ar;
+    volatile std::uint32_t reserved;
+    volatile std::uint32_t obr;
+    volatile std::uint32_t wrpr;
+    std::array<uint32_t, 8> reserved1;
+    volatile std::uint32_t keyr2;
+    uint32_t reserved2;
+    volatile std::uint32_t sr2;
+    volatile std::uint32_t cr2;
+    volatile std::uint32_t ar2;
   };
 
   /// Pointer to the flash control register
@@ -133,7 +133,7 @@ public:
     /// Set which clock will be used for the system clock.
     static constexpr auto system_clock_select = bit::mask::from<0, 1>();
 
-    static auto reg() { return hal::bit::modify(internal::rcc().CFGR); }
+    static auto reg() { return hal::bit::modify(internal::rcc().cfgr); }
   };
 
   /// Bit masks for the CR register
@@ -144,11 +144,11 @@ public:
     /// Used to enable the PLL
     static constexpr auto pllEnable = bit::mask::from<24>();
     /// Indicates if the external oscillator is ready for use
-    static constexpr auto kExternalOscReady = bit::mask::from<17>();
+    static constexpr auto external_osc_ready = bit::mask::from<17>();
     /// Used to enable the external oscillator
-    static constexpr auto kExternalOscEnable = bit::mask::from<16>();
+    static constexpr auto external_osc_enable = bit::mask::from<16>();
 
-    static auto reg() { return hal::bit::modify(internal::rcc().CR); }
+    static auto reg() { return hal::bit::modify(internal::rcc().cr); }
   };
 
   /// PLL frequency multiplication options.
@@ -185,7 +185,7 @@ public:
     /// Used to enable the LSE
     static constexpr auto low_speed_osc_enable = bit::mask::from<0>();
 
-    static auto reg() { return hal::bit::modify(internal::rcc().BDCR); }
+    static auto reg() { return hal::bit::modify(internal::rcc().bdcr); }
   };
 
   /// Available clock sources for the RTC
@@ -202,7 +202,7 @@ public:
   {
     high_speed_internal = 0b0,
     high_speed_external = 0b1,
-    high_speed_externalDividedBy2 = 0b11,
+    high_speed_external_divided_by_2 = 0b11,
   };
 
   /// Available dividers for the USB peripheral
@@ -312,16 +312,16 @@ public:
       // Step 2.1 Disable PLLs
       .clear(clock_control::pllEnable)
       // Step 2.1 Disable External Oscillators
-      .clear(clock_control::kExternalOscEnable);
+      .clear(clock_control::external_osc_enable);
 
     // =========================================================================
     // Step 3. Enable External Oscillators
     // =========================================================================
     // Step 3.1 Enable High speed external Oscillator
     if (m_config.high_speed_external != 0.0_MHz) {
-      clock_control::reg().set(clock_control::kExternalOscEnable);
+      clock_control::reg().set(clock_control::external_osc_enable);
 
-      while (!bit::extract<clock_control::kExternalOscReady>(
+      while (!bit::extract<clock_control::external_osc_ready>(
         clock_control::reg().get())) {
         continue;
       }
@@ -342,7 +342,7 @@ public:
     // =========================================================================
     clock_configuration::reg()
       .insert<clock_configuration::hse_pre_divider>(
-        (m_config.pll.source == pll_source::high_speed_externalDividedBy2))
+        (m_config.pll.source == pll_source::high_speed_external_divided_by_2))
       .insert<clock_configuration::pll_source>(value(m_config.pll.source));
 
     // =========================================================================
@@ -366,7 +366,7 @@ public:
         case pll_source::high_speed_external:
           m_pll_clock_rate = m_config.high_speed_external;
           break;
-        case pll_source::high_speed_externalDividedBy2:
+        case pll_source::high_speed_external_divided_by_2:
           m_pll_clock_rate = m_config.high_speed_external / 2;
           break;
       }
@@ -406,13 +406,13 @@ public:
     if (m_config.system_clock == system_clock_select::pll) {
       if (m_pll_clock_rate <= 24.0_MHz) {
         // 0 Wait states
-        bit::modify(flash().ACR).insert<bit::mask::from<0, 2>()>(0b000U);
+        bit::modify(flash().acr).insert<bit::mask::from<0, 2>()>(0b000U);
       } else if (24.0_MHz <= m_pll_clock_rate && m_pll_clock_rate <= 48.0_MHz) {
         // 1 Wait state
-        bit::modify(flash().ACR).insert<bit::mask::from<0, 2>()>(0b001U);
+        bit::modify(flash().acr).insert<bit::mask::from<0, 2>()>(0b001U);
       } else {
         // 2 Wait states
-        bit::modify(flash().ACR).insert<bit::mask::from<0, 2>()>(0b010U);
+        bit::modify(flash().acr).insert<bit::mask::from<0, 2>()>(0b010U);
       }
     }
 
@@ -661,7 +661,7 @@ private:
   hal::hertz m_rtc_clock_rate = 0.0_Hz;
   hal::hertz m_usb_clock_rate = 0.0_Hz;
   hal::hertz m_pll_clock_rate = 0.0_Hz;
-  hal::hertz m_ahb_clock_rate = 0.0_Hz;
+  hal::hertz m_ahb_clock_rate = high_speed_internal;
   hal::hertz m_apb1_clock_rate = 0.0_Hz;
   hal::hertz m_apb2_clock_rate = 0.0_Hz;
   hal::hertz m_timer_apb1_clock_rate = 0.0_Hz;

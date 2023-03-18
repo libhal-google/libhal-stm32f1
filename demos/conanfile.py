@@ -2,12 +2,12 @@ from conan import ConanFile
 from conan.tools.cmake import CMake, cmake_layout
 
 
-class RmdDemos(ConanFile):
+class Lpc40xxDemos(ConanFile):
     settings = "compiler", "build_type"
     generators = "CMakeToolchain", "CMakeDeps", "VirtualBuildEnv"
 
     def requirements(self):
-        self.requires("libhal-stm32/[^0.0.2]")
+        self.requires("libhal-stm32/[^0.1.0]")
         self.tool_requires("gnu-arm-embedded-toolchain/11.3.0")
         self.tool_requires("cmake-arm-embedded/0.1.1")
 
