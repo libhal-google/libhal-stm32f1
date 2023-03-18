@@ -74,11 +74,11 @@ private:
   {
     switch (bus_index) {
       case 0:
-        return &internal::rcc().AHBENR;
+        return &internal::rcc().ahbenr;
       case 1:
-        return &internal::rcc().APB1ENR;
+        return &internal::rcc().apb1enr;
       case 2:
-        return &internal::rcc().APB2ENR;
+        return &internal::rcc().apb2enr;
       default:
         return nullptr;
     }

@@ -1,18 +1,20 @@
-#include "hardware_map.hpp"
+#include <cinttypes>
+#include <libhal-armcortex/startup.hpp>
+#include <libhal-armcortex/system_control.hpp>
+#include <libhal/error.hpp>
+
+// Application function must be implemented by one of the compilation units
+// (.cpp) files.
+extern hal::status application();
 
 int main()
 {
-  auto init_result = initialize_target();
+  hal::cortex_m::initialize_data_section();
 
-  if (!init_result) {
-    hal::halt();
-  }
-
-  auto hardware_map = init_result.value();
-  auto is_finished = application(hardware_map);
+  auto is_finished = application();
 
   if (!is_finished) {
-    hardware_map.reset();
+    hal::cortex_m::system_control::reset();
   } else {
     hal::halt();
   }

@@ -7,8 +7,26 @@
 #include <libhal/config.hpp>
 
 #include "../power.hpp"
+#include "platform_check.hpp"
 
-namespace stm32::f10x::internal {
+namespace hal::stm32::f10x::internal {
+/**
+ * @brief Check the bounds of a GPIO at compile time and generate a compiler
+ * error if the pin and port combination are not supported.
+ *
+ * @tparam port - selects pin port to use
+ * @tparam pin - selects pin within the port to use
+ */
+template<std::uint8_t port, std::uint8_t pin>
+constexpr void check_gpio_bounds_at_compile()
+{
+  compile_time_platform_check();
+
+  static_assert(
+    ('A' <= port && port <= 'E' && 0 <= pin && pin <= 15),
+    "For ports between 'A' and 'E', the pin number must be between 0 and 15.");
+}
+
 class pin
 {
 public:
@@ -17,11 +35,11 @@ public:
    */
   struct alternative_function_io_t
   {
-    volatile std::uint32_t EVCR;
-    volatile std::uint32_t MAPR;
-    volatile std::array<std::uint32_t, 4> EXTICR;
-    std::uint32_t RESERVED0;
-    volatile std::uint32_t MAPR2;
+    volatile std::uint32_t evcr;
+    volatile std::uint32_t mapr;
+    volatile std::array<std::uint32_t, 4> exticr;
+    std::uint32_t reserved0;
+    volatile std::uint32_t mapr2;
   };
 
   /**
@@ -30,13 +48,13 @@ public:
    */
   struct gpio_t
   {
-    volatile std::uint32_t CRL;
-    volatile std::uint32_t CRH;
-    volatile std::uint32_t IDR;
-    volatile std::uint32_t ODR;
-    volatile std::uint32_t BSRR;
-    volatile std::uint32_t BRR;
-    volatile std::uint32_t LCKR;
+    volatile std::uint32_t crl;
+    volatile std::uint32_t crh;
+    volatile std::uint32_t idr;
+    volatile std::uint32_t odr;
+    volatile std::uint32_t bsrr;
+    volatile std::uint32_t brr;
+    volatile std::uint32_t lckr;
   };
 
   /**
@@ -112,14 +130,70 @@ public:
     // Ensure that AFIO is powered on before attempting to access it
     power(peripheral::afio).on();
     // Set the JTAG Release code
-    bit::modify(alternative_function_io().MAPR)
-      .insert<bit::mask::from<24, 26>()>(0b010);
+    bit::modify(alternative_function_io().mapr)
+      .insert<bit::mask::from<24, 26>()>(0b010U);
   }
+
+  static constexpr pin_config_t push_pull_gpio_output = {
+    .CNF1 = 0,
+    .CNF0 = 0,
+    .MODE = 0b11,  // Default to high speed 50 MHz
+    .PxODR = 0b0,  // Default to 0 LOW Voltage
+  };
+
+  static constexpr pin_config_t open_drain_gpio_output = {
+    .CNF1 = 0,
+    .CNF0 = 1,
+    .MODE = 0b11,  // Default to high speed 50 MHz
+    .PxODR = 0b0,  // Default to 0 LOW Voltage
+  };
+
+  static constexpr pin_config_t push_pull_alternative_output = {
+    .CNF1 = 1,
+    .CNF0 = 0,
+    .MODE = 0b11,  // Default to high speed 50 MHz
+    .PxODR = 0b0,  // Default to 0 LOW Voltage
+  };
+
+  static constexpr pin_config_t open_drain_alternative_output = {
+    .CNF1 = 1,
+    .CNF0 = 1,
+    .MODE = 0b11,  // Default to high speed 50 MHz
+    .PxODR = 0b0,  // Default to 0 LOW Voltage
+  };
+
+  static constexpr pin_config_t input_analog = {
+    .CNF1 = 0,
+    .CNF0 = 0,
+    .MODE = 0b00,
+    .PxODR = 0b0,  // Don't care
+  };
+
+  static constexpr pin_config_t input_float = {
+    .CNF1 = 0,
+    .CNF0 = 1,
+    .MODE = 0b00,
+    .PxODR = 0b0,  // Don't care
+  };
+
+  static constexpr pin_config_t input_pull_down = {
+    .CNF1 = 1,
+    .CNF0 = 0,
+    .MODE = 0b00,
+    .PxODR = 0b0,  // Pull Down
+  };
+
+  static constexpr pin_config_t input_pull_up = {
+    .CNF1 = 1,
+    .CNF0 = 0,
+    .MODE = 0b00,
+    .PxODR = 0b1,  // Pull Up
+  };
 
   /**
    * @brief
    *
-   * @param port - must be a capitol letter from 'A' to 'I'
+   * @param port - must be a capitol letter from 'A' to 'G'
    * @param pin - must be between 0 to 15
    */
   constexpr pin(std::uint8_t p_port, std::uint8_t p_pin)
@@ -128,8 +202,52 @@ public:
   {
   }
 
+  /// Returns the a pointer the gpio port.
+  gpio_t& port() const { return gpio(m_port); }
+
+  /// Returns a bit mask indicating where the config bits are in the config
+  /// registers.
+  bit::mask mask() const
+  {
+    return {
+      .position = static_cast<uint32_t>((m_pin * 4) % 32),
+      .width = 4,
+    };
+  }
+
+  /// Returns the configuration control register for the specific pin.
+  /// Pins 0 - 7 are in CRL and Pins 8 - 15 are in CRH.
+  volatile uint32_t& config_register() const
+  {
+    if (m_pin <= 7) {
+      return port().crl;
+    }
+    return port().crh;
+  }
+
+  /// @return the 4 bits of this ports config.
+  uint32_t config() const { return bit::extract(mask(), config_register()); }
+
+  /// Set this ports 4 bits configuration.
+  void config(pin_config_t p_config) const
+  {
+
+    constexpr auto cnf1 = bit::mask::from<3>();
+    constexpr auto cnf0 = bit::mask::from<2>();
+    constexpr auto mode = bit::mask::from<0, 1>();
+
+    auto config = bit::value<std::uint32_t>(0)
+                    .insert<cnf1>(p_config.CNF1)
+                    .insert<cnf0>(p_config.CNF0)
+                    .insert<mode>(p_config.MODE)
+                    .get();
+
+    config_register() =
+      bit::modify(config_register()).insert(mask(), config).to<std::uint32_t>();
+  }
+
 private:
   std::uint8_t m_port;
   std::uint8_t m_pin;
 };
-}  // namespace stm32::f10x::internal
+}  // namespace hal::stm32::f10x::internal
