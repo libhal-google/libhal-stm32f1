@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-namespace hal::stm32::f10x {
+namespace hal::stm32f1 {
 
 /// Number of bits between each enable register
 static constexpr uint32_t bus_id_offset = 32;
@@ -256,4 +256,4 @@ enum class error_t
 {
   max,
 };
-}  // namespace hal::stm32::f10x
+}  // namespace hal::stm32f1

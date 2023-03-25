@@ -9,7 +9,7 @@
 #include "../power.hpp"
 #include "platform_check.hpp"
 
-namespace hal::stm32::f10x::internal {
+namespace hal::stm32f1::internal {
 /**
  * @brief Check the bounds of a GPIO at compile time and generate a compiler
  * error if the pin and port combination are not supported.
@@ -250,4 +250,4 @@ private:
   std::uint8_t m_port;
   std::uint8_t m_pin;
 };
-}  // namespace hal::stm32::f10x::internal
+}  // namespace hal::stm32f1::internal

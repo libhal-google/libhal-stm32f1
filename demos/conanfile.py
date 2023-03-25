@@ -7,7 +7,7 @@ class Lpc40xxDemos(ConanFile):
     generators = "CMakeToolchain", "CMakeDeps", "VirtualBuildEnv"
 
     def requirements(self):
-        self.requires("libhal-stm32/[^0.1.0]")
+        self.requires("libhal-stm32f1/0.3.0")
         self.tool_requires("gnu-arm-embedded-toolchain/11.3.0")
         self.tool_requires("cmake-arm-embedded/0.1.1")
 

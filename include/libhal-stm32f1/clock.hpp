@@ -9,7 +9,7 @@
 #include "constants.hpp"
 #include "internal/reset_and_clock_control.hpp"
 
-namespace hal::stm32::f10x {
+namespace hal::stm32f1 {
 
 class clock
 {
@@ -668,4 +668,4 @@ private:
   hal::hertz m_timer_apb2_clock_rate = 0.0_Hz;
   hal::hertz m_adc_clock_rate = 0.0_Hz;
 };
-}  // namespace hal::stm32::f10x
+}  // namespace hal::stm32f1
