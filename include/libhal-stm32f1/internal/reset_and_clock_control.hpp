@@ -4,7 +4,7 @@
 
 #include <libhal/config.hpp>
 
-namespace hal::stm32::f10x::internal {
+namespace hal::stm32f1::internal {
 struct reset_and_clock_control_t
 {
   volatile std::uint32_t cr;
@@ -34,4 +34,4 @@ inline reset_and_clock_control_t& rcc()
   return *reinterpret_cast<reset_and_clock_control_t*>(0x40000000 + 0x20000 +
                                                        0x1000);
 }
-}  // namespace hal::stm32::f10x::internal
+}  // namespace hal::stm32f1::internal

@@ -8,15 +8,15 @@ import os
 required_conan_version = ">=1.50.0"
 
 
-class libhalSTMConan(ConanFile):
-    name = "libhal-stm32"
-    version = "0.2.0"
+class libhal_stm32f1_conan(ConanFile):
+    name = "libhal-stm32f1"
+    version = "0.3.0"
     license = "Apache-2.0"
     url = "https://github.com/conan-io/conan-center-index"
-    homepage = "https://libhal.github.io/libhal-stm32"
-    description = ("Drivers for the stm series of microcontrollers using "
+    homepage = "https://libhal.github.io/libhal-stm32f1"
+    description = ("Drivers for the stm32f1 series of microcontrollers using "
                    "libhal's abstractions.")
-    topics = ("ARM", "microcontroller", "peripherals", "hardware", "stm32")
+    topics = ("ARM", "microcontroller", "peripherals", "hardware", "stm32f1")
     settings = "compiler", "build_type", "os", "arch"
     exports_sources = "include/*", "tests/*",  "linker_scripts/*", "LICENSE"
     generators = "CMakeToolchain", "CMakeDeps"
@@ -99,21 +99,21 @@ class libhalSTMConan(ConanFile):
 
         linker_path = os.path.join(self.package_folder, "linker_scripts")
 
-        self.cpp_info.set_property("cmake_file_name", "libhal-stm32")
+        self.cpp_info.set_property("cmake_file_name", "libhal-stm32f1")
         self.cpp_info.set_property("cmake_find_mode", "both")
 
-        self.cpp_info.components["stm32"].set_property(
-            "cmake_target_name",  "libhal::stm32")
-        self.cpp_info.components["stm32"].exelinkflags.append(
+        self.cpp_info.components["stm32f1"].set_property(
+            "cmake_target_name",  "libhal::stm32f1")
+        self.cpp_info.components["stm32f1"].exelinkflags.append(
             "-L" + linker_path)
-        self.cpp_info.components["stm32"].requires = requirements_list
+        self.cpp_info.components["stm32f1"].requires = requirements_list
 
         def create_component(self, component, flags):
-            link_script = "-Tlibhal-stm32/" + component + ".ld"
+            link_script = "-Tlibhal-stm32f1/" + component + ".ld"
             component_name = "libhal::" + component
             self.cpp_info.components[component].set_property(
                 "cmake_target_name", component_name)
-            self.cpp_info.components[component].requires = ["stm32"]
+            self.cpp_info.components[component].requires = ["stm32f1"]
             self.cpp_info.components[component].exelinkflags.append(link_script)
             self.cpp_info.components[component].exelinkflags.extend(flags)
             self.cpp_info.components[component].cflags = flags

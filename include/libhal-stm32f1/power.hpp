@@ -7,7 +7,7 @@
 #include "constants.hpp"
 #include "internal/reset_and_clock_control.hpp"
 
-namespace hal::stm32::f10x {
+namespace hal::stm32f1 {
 
 /**
  * @brief Power control for lpc40xx peripherals
@@ -88,4 +88,4 @@ private:
   volatile std::uint32_t* m_enable_register = nullptr;
   std::uint8_t m_bit_position = 0;
 };
-}  // namespace hal::stm32::f10x
+}  // namespace hal::stm32f1

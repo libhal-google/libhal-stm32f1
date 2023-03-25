@@ -8,7 +8,7 @@
 #include "internal/platform_check.hpp"
 #include "power.hpp"
 
-namespace hal::stm32::f10x {
+namespace hal::stm32f1 {
 /**
  * @brief Output pin implementation for the stm32::f10x
  *
@@ -98,4 +98,4 @@ inline result<output_pin::level_t> output_pin::driver_level()
 
   return level_t{ .state = static_cast<bool>(pin_value) };
 }
-}  // namespace hal::stm32::f10x
+}  // namespace hal::stm32f1
