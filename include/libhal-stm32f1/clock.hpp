@@ -133,7 +133,10 @@ public:
     /// Set which clock will be used for the system clock.
     static constexpr auto system_clock_select = bit::mask::from<0, 1>();
 
-    static auto reg() { return hal::bit::modify(internal::rcc().cfgr); }
+    static auto reg()
+    {
+      return hal::bit::modify(internal::rcc().cfgr);
+    }
   };
 
   /// Bit masks for the CR register
@@ -142,13 +145,16 @@ public:
     /// Indicates if the PLL is enabled and ready
     static constexpr auto pll_ready = bit::mask::from<25>();
     /// Used to enable the PLL
-    static constexpr auto pllEnable = bit::mask::from<24>();
+    static constexpr auto pll_enable = bit::mask::from<24>();
     /// Indicates if the external oscillator is ready for use
     static constexpr auto external_osc_ready = bit::mask::from<17>();
     /// Used to enable the external oscillator
     static constexpr auto external_osc_enable = bit::mask::from<16>();
 
-    static auto reg() { return hal::bit::modify(internal::rcc().cr); }
+    static auto reg()
+    {
+      return hal::bit::modify(internal::rcc().cr);
+    }
   };
 
   /// PLL frequency multiplication options.
@@ -185,7 +191,10 @@ public:
     /// Used to enable the LSE
     static constexpr auto low_speed_osc_enable = bit::mask::from<0>();
 
-    static auto reg() { return hal::bit::modify(internal::rcc().bdcr); }
+    static auto reg()
+    {
+      return hal::bit::modify(internal::rcc().bdcr);
+    }
   };
 
   /// Available clock sources for the RTC
@@ -222,12 +231,12 @@ public:
     hal::hertz low_speed_external = 0.0_MHz;
 
     /// Defines the configuration of the PLL
-    struct
+    struct pll_t
     {
       bool enable = false;
       pll_source source = pll_source::high_speed_internal;
       pll_multiply multiply = pll_multiply::multiply_by_2;
-      struct
+      struct usb_divider_t
       {
         usb_divider divider = usb_divider::divide_by_1_point_5;
       } usb = {};
@@ -242,26 +251,26 @@ public:
     system_clock_select system_clock = system_clock_select::high_speed_internal;
 
     /// Defines the configuration for the RTC
-    struct
+    struct rtc_t
     {
       bool enable = false;
       rtc_source source = rtc_source::low_speed_internal;
     } rtc = {};
 
     /// Defines the configuration of the dividers beyond system clock mux.
-    struct
+    struct ahb_t
     {
       ahb_divider divider = ahb_divider::divide_by_1;
       /// Maximum rate of 36 MHz
-      struct
+      struct apb1_t
       {
         apb_divider divider = apb_divider::divide_by_1;
       } apb1 = {};
 
-      struct
+      struct apb2_t
       {
         apb_divider divider = apb_divider::divide_by_1;
-        struct
+        struct adc_t
         {
           /// Maximum of 14 MHz
           adc_divider divider = adc_divider::divide_by_2;
@@ -310,7 +319,7 @@ public:
     // =========================================================================
     clock_control::reg()
       // Step 2.1 Disable PLLs
-      .clear(clock_control::pllEnable)
+      .clear(clock_control::pll_enable)
       // Step 2.1 Disable External Oscillators
       .clear(clock_control::external_osc_enable);
 
@@ -352,7 +361,7 @@ public:
       clock_configuration::reg().insert<clock_configuration::pll_mul>(
         value(m_config.pll.multiply));
 
-      clock_control::reg().set(clock_control::pllEnable);
+      clock_control::reg().set(clock_control::pll_enable);
 
       while (
         !bit::extract<clock_control::pll_ready>(clock_control::reg().get())) {
@@ -578,7 +587,10 @@ public:
    *
    * @return auto& - clock configuration reference
    */
-  auto& config() { return m_config; }
+  auto& config()
+  {
+    return m_config;
+  }
 
   /// @return the clock rate frequency of a peripheral
   hal::hertz get_frequency(peripheral p_id) const
