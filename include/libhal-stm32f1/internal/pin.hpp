@@ -191,10 +191,10 @@ public:
   };
 
   /**
-   * @brief
+   * @brief Construct pin manipulation object
    *
-   * @param port - must be a capitol letter from 'A' to 'G'
-   * @param pin - must be between 0 to 15
+   * @param p_port - must be a capitol letter from 'A' to 'G'
+   * @param p_pin - must be between 0 to 15
    */
   constexpr pin(std::uint8_t p_port, std::uint8_t p_pin)
     : m_port(p_port)
@@ -203,7 +203,10 @@ public:
   }
 
   /// Returns the a pointer the gpio port.
-  gpio_t& port() const { return gpio(m_port); }
+  gpio_t& port() const
+  {
+    return gpio(m_port);
+  }
 
   /// Returns a bit mask indicating where the config bits are in the config
   /// registers.
@@ -226,12 +229,14 @@ public:
   }
 
   /// @return the 4 bits of this ports config.
-  uint32_t config() const { return bit::extract(mask(), config_register()); }
+  uint32_t config() const
+  {
+    return bit::extract(mask(), config_register());
+  }
 
   /// Set this ports 4 bits configuration.
   void config(pin_config_t p_config) const
   {
-
     constexpr auto cnf1 = bit::mask::from<3>();
     constexpr auto cnf0 = bit::mask::from<2>();
     constexpr auto mode = bit::mask::from<0, 1>();

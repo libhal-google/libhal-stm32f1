@@ -70,9 +70,9 @@ public:
   }
 
 private:
-  static volatile uint32_t* enable(int bus_index)
+  static volatile uint32_t* enable(int p_bus_index)
   {
-    switch (bus_index) {
+    switch (p_bus_index) {
       case 0:
         return &internal::rcc().ahbenr;
       case 1:
