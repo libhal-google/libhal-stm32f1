@@ -12,6 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+namespace hal::stm32f1 {
+extern void output_pin_test();
+}  // namespace hal::stm32f1
+
 int main()
 {
+  hal::stm32f1::output_pin_test();
 }

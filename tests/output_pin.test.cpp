@@ -12,13 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#pragma once
+#include <libhal-stm32f1/output_pin.hpp>
 
-#define BOOST_LEAF_EMBEDDED
-#define BOOST_LEAF_NO_THREADS
-
-#include <string_view>
-
-namespace hal::config {
-constexpr std::string_view platform = "stm32f103";
-}  // namespace hal::config
+namespace hal::stm32f1 {
+void output_pin_test()
+{
+}
+}  // namespace hal::stm32f1

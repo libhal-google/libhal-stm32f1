@@ -14,11 +14,14 @@
 
 #pragma once
 
-#define BOOST_LEAF_EMBEDDED
-#define BOOST_LEAF_NO_THREADS
-
-#include <string_view>
-
-namespace hal::config {
-constexpr std::string_view platform = "test_package";
-}  // namespace hal::config
+namespace hal::stm32f1 {
+/**
+ * @brief Make JTAG pins not associated with SWD available as IO
+ *
+ * The GPIO pins PB3, PB4, and PA15 are default initalized to be used for JTAG
+ * purposes. If you are using SWD and want to use these pins as GPIO or as
+ * other alternative functions, this function MUST be called.
+ *
+ */
+void release_jtag_pins();
+}  // namespace hal::stm32f1
