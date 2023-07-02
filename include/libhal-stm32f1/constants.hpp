@@ -19,15 +19,15 @@
 namespace hal::stm32f1 {
 
 /// Number of bits between each enable register
-static constexpr uint32_t bus_id_offset = 32;
+static constexpr std::uint32_t bus_id_offset = 32;
 /// Bit position of AHB
-static constexpr uint32_t ahb_bus = bus_id_offset * 0;
+static constexpr std::uint32_t ahb_bus = bus_id_offset * 0;
 /// Bit position of APB1
-static constexpr uint32_t apb1_bus = bus_id_offset * 1;
+static constexpr std::uint32_t apb1_bus = bus_id_offset * 1;
 /// Bit position of AHB2
-static constexpr uint32_t apb2_bus = bus_id_offset * 2;
+static constexpr std::uint32_t apb2_bus = bus_id_offset * 2;
 /// Bit position of systems outside of any bus
-static constexpr uint32_t beyond_bus = bus_id_offset * 3;
+static constexpr std::uint32_t beyond_bus = bus_id_offset * 3;
 
 /// List of each peripheral and their power on id number for this platform
 enum class peripheral : std::uint8_t
@@ -265,8 +265,9 @@ enum class irq : std::uint16_t
   otg_fs = 67,
   max,
 };
-/// Error types for stm32f10x
-enum class error_t
+
+/// Error types for stm32f1
+enum class error_t : std::uint16_t
 {
   max,
 };
