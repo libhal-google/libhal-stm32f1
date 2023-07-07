@@ -79,10 +79,10 @@ python3 -m pip install stm32loader
 To flash command is:
 
 ```bash
-stm32loader.py -p /dev/tty.usbserial-10 -e -w -v build/stm32f103c8/Debug/blinker.elf.bin
+stm32loader -p /dev/tty.usbserial-10 -e -w -v demos/build/stm32f103c8/Debug/blinker.elf.bin
 ```
 
-- Replace `build/stm32f103c8/Debug/blinker.elf.bin` with the path to the binary you'd like
+- Replace `demos/build/stm32f103c8/Debug/blinker.elf.bin` with the path to the binary you'd like
   to flash.
 - Replace `/dev/tty.usbserial-10` with the path to your serial port on your
   machine.
