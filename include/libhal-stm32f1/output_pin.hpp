@@ -29,8 +29,8 @@ public:
   /**
    * @brief Get the output pin object
    *
-   * @tparam p_port - selects pin port to use
-   * @tparam p_pin - selects which pin within the port to use
+   * @param p_port - selects pin port to use
+   * @param p_pin - selects which pin within the port to use
    * @param p_settings - initial pin settings
    * @return result<output_pin> - reference to the statically allocated output
    * pin
