@@ -8,110 +8,83 @@
 [![GitHub issues](https://img.shields.io/github/issues/libhal/libhal.svg)](https://github.com/libhal/libhal/issues)
 [![Latest Version](https://libhal.github.io/libhal-stm32f1/latest_version.svg)](https://github.com/libhal/libhal-stm32f1/blob/main/conanfile.py)
 
-Target library for the stm32f1xx series of microcontrollers by NXP conforming to
-the libhal interface specification.
+libhal platform library for the stm32f1 series of microcontrollers by
+STMicroelectronics.
 
-## [📚 Software APIs](https://libhal.github.io/libhal-stm32f1/api)
+## 📚 Software APIs & Usage
+
+To learn about the available drivers and APIs see the
+[Doxygen](https://libhal.github.io/libhal-stm32f1/api)
+documentation page or look at the
+[`include/libhal-stm32f1`](https://github.com/libhal/libhal-stm32f1/tree/main/include/libhal-stm32f1)
+directory.
+
+To see how each driver is used see the
+[`demos/`](https://github.com/libhal/libhal-stm32f1/tree/main/demos) directory.
 
 ## 🧰 Setup
 
-1. [Setup libhal tools](https://libhal.github.io/prerequisites/)
-2. Add `libhal-trunk` remote conan server
+Following the
+[🚀 Getting Started](https://libhal.github.io/2.1/getting_started/)
+instructions.
 
-   ```bash
-   conan remote add libhal-trunk https://libhal.jfrog.io/artifactory/api/conan/trunk-conan
-   conan config set general.revisions_enabled=True
-   ```
+## 📡 Installing Profiles
 
-   > The "trunk" repository represents the latest packaged code based on
-   > github.
-   >
-   > This command will insert `libhal-trunk` as the first server to check
-   > before checking the conan center index. The second command will enable
-   > revision mode which is required to use the `libhal-trunk` conan package
-   > repository.
+Profiles define which platform you mean to build your project against. These
+profiles are needed for code and demos in this repo and for applications that
+wish to execute on an stm32f1 device.
+
+```bash
+conan config install -sf conan/profiles/ -tf profiles https://github.com/libhal/libhal-armcortex.git
+conan config install -sf conan/profiles/ -tf profiles https://github.com/libhal/libhal-stm32f1.git
+```
+
+Note that running these functions is safe. THey simply overwrite the old files
+with the latest files. So running this for `libhal-armcortex` between this and
+other platform libraries is fine.
 
 ## 🏗️ Building Demos
 
-Before building any demos, we have to make the build directory
+To build demos, start at the root of the repo and execute the following command:
 
 ```bash
-cd demos
-mkdir build
-cd build
+conan build demos -pr stm32f103c8 -s build_type=Debug
 ```
 
-### Debug Builds
-
-Debug builds are helpful as they reduce the amount of compile time optimizations
-in order to make the debugging experience better. This comes at the cost of
-slower code and larger binary sizes.
-
-To build with this level:
-
-```
-conan install .. -s build_type=Debug --build=missing
-cmake .. -D CMAKE_BUILD_TYPE=Debug -D CMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake
-make -j
-```
-
-This will build every project for every MCU family in the stm32f1xx family.
-
-### Release Builds
-
-Release builds are harder to debug but are faster and have smaller binary sizes.
-
-To build with this level:
-
-```
-conan install .. -s build_type=Release --build=missing
-cmake .. -D CMAKE_BUILD_TYPE=Release" -D CMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake
-make
-```
-
-This will build every project for every MCU family in the stm32f1xx family.
-
-### Specifying an Application
-
-To specify a specific application, add a target to the build command. Here
-are some examples:
-
-```
-make stm32f178_adc
-make stm32f174_can
-make stm32f188_interrupt_pin
-```
-
-The naming convention is "linker_script_name" (without the .ld extension) and
-application name (without the .cpp extension)
+This will build the demos for the `stm32f103c8` microcontroller in `Debug` mode.
+Replace `stm32f103c8` with any of the other profiles. The Blue Pill board and
+STM32F1 MicroMod use the profile `stm32f103c8`. Available profiles can be found
+in
+[`conan/profile/`](https://github.com/libhal/libhal-stm32f1/tree/main/conan/profile/).
 
 ## 💾 Flashing/Programming
 
-There are a few ways to flash an stm32f1 series MCU. The recommended methods are
-via serial UART and JTAG/SWD.
+There are a few ways to flash an LPC40 series MCU. The recommended methods are
+via serial UART or using a debugger JTAG/SWD.
 
-### Using Serial/UART over nxpprog
+### Using Serial/UART over stm32loader
 
-`nxpprog` is a script for programming and flashing stm32f1 series chips over
+`stm32loader` is a script for programming and flashing LPC40 series chips over
 serial/UART. Using it will require a USB to serial/uart adaptor.
 
-See the README on [nxpprog](https://github.com/libhal/nxpprog), for details on
-how to use NXPPROG.
+For more information, please refer to the README of
+[stm32loader](https://pypi.org/project/stm32loader/).
 
-To install nxpprog:
+To install stm32loader:
 
-```
-python3 -m pip install -U nxpprog
-```
-
-For reference the flash command is:
-
-```
-nxpprog --control --binary="app.bin" --device="/dev/tty.usbserial-140"
+```bash
+python3 -m pip install stm32loader
 ```
 
-- Replace `app.bin` with the path to your binary.
-- Replace `/dev/tty.usbserial-140` with the path to your serial port on your
+To flash command is:
+
+```bash
+stm32loader.py -p /dev/tty.usbserial-10 -e -w -v build/stm32f103c8/Debug/blinker.elf.bin
+```
+
+- Replace `build/stm32f103c8/Debug/blinker.elf.bin` with the path to the binary you'd like
+  to flash.
+- Replace `/dev/tty.usbserial-10` with the path to your serial port on your
   machine.
   - Don't know which serial port to use? Use this guide from the MATLAB docs
     to your port for your operating system. Simply ignore that its made for
@@ -125,113 +98,63 @@ nxpprog --control --binary="app.bin" --device="/dev/tty.usbserial-140"
 processor devices over JTAG and SWD.
 
 This will require a JTAG or SWD debugger. The recommended debugger for the
-stm32f1 series of devices is the STLink v2 (cheap variants can be found on
+LPC40 series of devices is the STLink v2 (cheap variants can be found on
 Amazon).
 
-Installation steps can be found here: https://pyocd.io/docs/installing
+See [PyOCD Installation Page](https://pyocd.io/docs/installing) for installation
+details.
 
 For reference the flashing command is:
 
-```
-pyocd flash stm32f178_blinker.elf.bin --target stm32f188
+```bash
+pyocd flash --target stm32f103rc build/stm32f103c8/Debug/blinker.elf.bin
 ```
 
-Note that target `stm32f188` works for all stm32f1 series microcontrollers.
+Note that target `stm32f103rc` works for all stm32f1 series microcontrollers.
 
 ## 📦 Adding `libhal-stm32f1` to your project
 
-### `conanfile.txt`
+This section assumes you are using the
+[`libhal-starter`](https://github.com/libhal/libhal-starter)
+project.
 
-Add `libhal-stm32f1` to your `conanfile.txt`:
+Make sure to add the following options and default options to your app's
+`ConanFile` class:
 
-```
-[requires]
-libhal-stm32f1/0.3.5
-```
-
-Replace `0.3.5` with the which ever version you prefer (latest version is
-recommended). See the [libhal-stm32f1
-package](https://libhal.jfrog.io/ui/packages/conan:%2F%2Flibstm32f1xx)
-
-Add the following tools to your `[tool_requires]` section:
-
-```
-[tool_requires]
-gnu-arm-embedded-toolchain/11.3.0
-cmake-arm-embedded/0.1.1
+```python
+    options = {"platform": ["ANY"]}
+    default_options = {"platform": "unspecified"}
 ```
 
-- `gnu-arm-embedded-toolchain/11.3.0`: The ARM embedded cross compiler for
-  compiling the source code.
-- `cmake-arm-embedded/0.1.1`: Provides the toolchain cmake files which know how
-  to use the ARM cross compiler
+Add the following to your `requirements()` method:
 
-### Using CMake
-
-After your `project()` declaration you can add the following line to find
-the libhal-stm32f1 library
-
-```cmake
-find_package(libhal-stm32f1 REQUIRED CONFIG)
+```python
+    def requirements(self):
+        if str(self.options.platform).startswith("stm32f1"):
+            self.requires("libhal-stm32f1/[^2.0.0]")
 ```
 
-To use the `libhal-stm32f1` with your library you need to add it as a target
-link library as shown below:
+The version number can be changed to whatever is appropriate for your
+application. If you don't know, using the latest is usually a good choice.
 
-```cmake
-target_link_libraries(${PROJECT_NAME} PRIVATE libhal::stm32f178)
-```
+The CMake from the starter project will already be ready to support the new
+platform library. No change needed.
 
-In the above cmake directive, change `${PROJECT_NAME}` with the name of your
-executable, and change `stm32f178` with the correct microcontroller on your
-development board. The following microcontrollers are available:
+To perform a test build simple run `conan build` as is done above with the
+desired target platform profile.
 
-- stm32f172
-- stm32f174
-- stm32f176
-- stm32f178
-- stm32f188
+## 🏁 Startup & Initialization
 
-After that, you'll want to run the `arm_cortex_post_build()` function which
-comes from the `cmake-arm-toolchain` tool dependency. This function turns the
-executable, which is in the ELF format, into a `.hex` and `.bin` formats which
-are used for programming the device.
-
-```cmake
-arm_cortex_post_build(${PROJECT_NAME})
-```
-
-Replace `${PROJECT_NAME}` with your executable name as you did with
-`target_link_libraries`.
-
-#### ✨ Special CMake Component Target: `stm32f1xx`
-
-This target is used for unit testing and host side development. Unlike the other
-components, this one doesn't inject a linker script OR any ARM architecture
-flags into the compiler arguments. Those arguments would NOT work on any system
-with an operating system and thus need to be removed when performing host side
-testing.
-
-### Configuring `libhal.tweaks.hpp`
-
-Set the `platform` configuration variable to the name of the microcontroller
-you are using. Example `stm32f178`.
-
-## 🏁 Initializing the device
-
-First step in the program right after main is called is to initialize your RAM:
+The `initialize_processor()` function for all platforms should do the following:
 
 ```C++
-hal::cortex_m::initialize_data_section();
-```
+#include <libhal-armcortex/startup.hpp>
 
-Next enable the floating point unit:
+hal::status initialize_processor()
+{
+  hal::cortex_m::initialize_data_section();
 
-```C++
-// Do NOT enable the FPU for the stm32f174 and stm32f172 microcontrollers as they
-// do not have an FPU. Doing so will crash the device.
-if constexpr (!hal::is_platform("stm32f174") && !hal::is_platform("stm32f172")) {
-  hal::cortex_m::initialize_floating_point_unit();
+  return hal::success();
 }
 ```
 
@@ -241,7 +164,7 @@ To setting the CPU clock speed to the maximum of 120MHz, include the line below,
 with the rest of the includes:
 
 ```C++
-
+#include <libhal-stm32f1/clock.hpp>
 ```
 
 Next run the following command but replace `12.0_MHz` with the crystal
@@ -251,10 +174,10 @@ this without the oscillator will cause the device to freeze as it will attempt
 to use a clock that does not exist.
 
 ```C++
-hal::stm32f1::clock::maximum(12.0_MHz);
+// NOT AVAILABLE YET...
 ```
 
-#### 🕰️ Detailed Clock Tree Control 🟡
+#### 🕰️ Detailed Clock Tree Control
 
 Coming soon...
 
@@ -264,19 +187,20 @@ Coming soon...
 
 In one terminal:
 
-```
-pyocd gdbserver --target=stm32f188 --persist
+```bash
+pyocd gdbserver --target=stm32f103rc --persist
 ```
 
 In another terminal:
 
-```
-arm-none-eabi-gdb stm32f178_blinker.elf -ex "target remote :3333"
+```bash
+arm-none-eabi-gdb demos/build/stm32f103c8/blinker.elf -ex "target remote :3333"
 ```
 
-- Replace `stm32f178_blinker.elf` with the path to your binary.
+Replace `demos/build/stm32f103c8/blinker.elf` with the path to the elf file you'd
+like to use for the debugging session.
 
-### Using OpenOCD 🟡
+### Using OpenOCD
 
 Coming soon... (its more complicated)
 
