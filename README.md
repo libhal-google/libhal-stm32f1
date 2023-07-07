@@ -5,7 +5,7 @@
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/b084e6d5962d49a9afcb275d62cd6586)](https://www.codacy.com/gh/libhal/libhal-stm32f1/dashboard?utm_source=github.com&utm_medium=referral&utm_content=libhal/libhal-stm32f1&utm_campaign=Badge_Grade)
 [![GitHub stars](https://img.shields.io/github/stars/libhal/libhal-stm32f1.svg)](https://github.com/libhal/libhal-stm32f1/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/libhal/libhal-stm32f1.svg)](https://github.com/libhal/libhal-stm32f1/network)
-[![GitHub issues](https://img.shields.io/github/issues/libhal/libhal.svg)](https://github.com/libhal/libhal/issues)
+[![GitHub issues](https://img.shields.io/github/issues/libhal-stm32f1/libhal.svg)](https://github.com/libhal/libhal-stm32f1/issues)
 [![Latest Version](https://libhal.github.io/libhal-stm32f1/latest_version.svg)](https://github.com/libhal/libhal-stm32f1/blob/main/conanfile.py)
 
 libhal platform library for the stm32f1 series of microcontrollers by
