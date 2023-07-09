@@ -6,7 +6,6 @@
 [![GitHub stars](https://img.shields.io/github/stars/libhal/libhal-stm32f1.svg)](https://github.com/libhal/libhal-stm32f1/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/libhal/libhal-stm32f1.svg)](https://github.com/libhal/libhal-stm32f1/network)
 [![GitHub issues](https://img.shields.io/github/issues/libhal/libhal-stm32f1.svg)](https://github.com/libhal/libhal-stm32f1/issues)
-[![Latest Version](https://libhal.github.io/libhal-stm32f1/latest_version.svg)](https://github.com/libhal/libhal-stm32f1/blob/main/conanfile.py)
 
 libhal platform library for the stm32f1 series of microcontrollers by
 STMicroelectronics.
