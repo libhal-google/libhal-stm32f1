@@ -23,7 +23,7 @@ find_package(libhal-stm32f1 REQUIRED CONFIG)
 # List of demo applications
 # To add a new demo to the list, simply add its filename without the .cpp
 # extension to this list.
-set(DEMOS blinker)
+set(DEMOS blinker systick_timer)
 
 add_library(startup_code main.cpp)
 target_compile_options(startup_code PRIVATE -g)
