@@ -82,7 +82,7 @@ result<output_pin::set_level_t> output_pin::driver_level(bool p_high)
 
 result<output_pin::level_t> output_pin::driver_level()
 {
-  auto pin_value = bit::extract(bit::mask::from(m_pin), gpio(m_port).idr);
+  auto pin_value = bit_extract(bit_mask::from(m_pin), gpio(m_port).idr);
 
   return level_t{ .state = static_cast<bool>(pin_value) };
 }

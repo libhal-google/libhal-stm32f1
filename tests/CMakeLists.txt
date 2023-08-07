@@ -40,8 +40,17 @@ else()
 endif()
 
 find_package(ut REQUIRED CONFIG)
+find_package(libhal-util REQUIRED CONFIG)
 
 add_executable(unit_test
+
+  # Source
+  ../src/clock.cpp
+  ../src/output_pin.cpp
+  ../src/power.cpp
+  ../src/pin.cpp
+
+  # Tests
   output_pin.test.cpp
   main.test.cpp
 )
@@ -70,4 +79,4 @@ target_link_options(unit_test PRIVATE
 
 target_link_libraries(unit_test PRIVATE
   boost-ext-ut::ut
-  libhal-stm32f1)
+  libhal::util)

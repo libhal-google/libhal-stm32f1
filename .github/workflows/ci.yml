@@ -3,9 +3,11 @@ name: ✅ Checks
 on:
   workflow_dispatch:
   pull_request:
+  release:
+    types:
+      - published
+      - deleted
   push:
-    tags:
-      - "*"
     branches:
       - main
   schedule:
@@ -13,11 +15,11 @@ on:
 
 jobs:
   ci:
-    uses: libhal/ci/.github/workflows/library.yml@4.0.0
+    uses: libhal/ci/.github/workflows/library.yml@4.x.y
     secrets: inherit
 
   cortex-m3:
-    uses: libhal/ci/.github/workflows/platform_deploy.yml@4.0.0
+    uses: libhal/ci/.github/workflows/platform_deploy.yml@4.x.y
     with:
       profile: stm32f103c8
       upload: true
@@ -25,26 +27,15 @@ jobs:
     secrets: inherit
 
   stm32f103c4:
-    uses: libhal/ci/.github/workflows/platform_deploy.yml@4.0.0
+    uses: libhal/ci/.github/workflows/platform_deploy.yml@4.x.y
     with:
       profile: stm32f103c4
       processor_profile: https://github.com/libhal/libhal-armcortex.git
     secrets: inherit
 
   stm32f103zd:
-    uses: libhal/ci/.github/workflows/platform_deploy.yml@4.0.0
+    uses: libhal/ci/.github/workflows/platform_deploy.yml@4.x.y
     with:
       profile: stm32f103zd
       processor_profile: https://github.com/libhal/libhal-armcortex.git
     secrets: inherit
-
-  release:
-    needs: [ci, cortex-m3, stm32f103c4, stm32f103zd]
-    if: startsWith(github.ref, 'refs/tags/')
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Release
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
-        with:
-          generate_release_notes: true

@@ -26,7 +26,7 @@ required_conan_version = ">=1.50.0"
 
 class libhal_stm32f1_conan(ConanFile):
     name = "libhal-stm32f1"
-    version = "2.0.1"
+    version = "2.0.3"
     license = "Apache-2.0"
     url = "https://github.com/conan-io/conan-center-index"
     homepage = "https://libhal.github.io/libhal-stm32f1"
@@ -82,8 +82,8 @@ class libhal_stm32f1_conan(ConanFile):
 
     def requirements(self):
         self.requires("libhal/[^2.0.0]")
-        self.requires("libhal-util/[^2.0.0]")
-        self.requires("libhal-armcortex/[^2.0.1]")
+        self.requires("libhal-util/[^3.0.0]")
+        self.requires("libhal-armcortex/[^2.0.3]")
 
     def layout(self):
         cmake_layout(self)

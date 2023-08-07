@@ -82,7 +82,7 @@ void configure_clocks(clock_tree p_clock_tree)
   if (p_clock_tree.high_speed_external != 0.0_MHz) {
     clock_control::reg().set(clock_control::external_osc_enable);
 
-    while (!bit::extract<clock_control::external_osc_ready>(
+    while (!bit_extract<clock_control::external_osc_ready>(
       clock_control::reg().get())) {
       continue;
     }
@@ -92,7 +92,7 @@ void configure_clocks(clock_tree p_clock_tree)
   if (p_clock_tree.low_speed_external != 0.0_MHz) {
     rtc_register::reg().set(rtc_register::low_speed_osc_enable);
 
-    while (!bit::extract<rtc_register::low_speed_osc_ready>(
+    while (!bit_extract<rtc_register::low_speed_osc_ready>(
       rtc_register::reg().get())) {
       continue;
     }
@@ -115,8 +115,7 @@ void configure_clocks(clock_tree p_clock_tree)
 
     clock_control::reg().set(clock_control::pll_enable);
 
-    while (
-      !bit::extract<clock_control::pll_ready>(clock_control::reg().get())) {
+    while (!bit_extract<clock_control::pll_ready>(clock_control::reg().get())) {
       continue;
     }
 
@@ -168,13 +167,13 @@ void configure_clocks(clock_tree p_clock_tree)
   if (p_clock_tree.system_clock == system_clock_select::pll) {
     if (m_pll_clock_rate <= 24.0_MHz) {
       // 0 Wait states
-      bit::modify(flash->acr).insert<bit::mask::from<0, 2>()>(0b000U);
+      bit_modify(flash->acr).insert<bit_mask::from<0, 2>()>(0b000U);
     } else if (24.0_MHz <= m_pll_clock_rate && m_pll_clock_rate <= 48.0_MHz) {
       // 1 Wait state
-      bit::modify(flash->acr).insert<bit::mask::from<0, 2>()>(0b001U);
+      bit_modify(flash->acr).insert<bit_mask::from<0, 2>()>(0b001U);
     } else {
       // 2 Wait states
-      bit::modify(flash->acr).insert<bit::mask::from<0, 2>()>(0b010U);
+      bit_modify(flash->acr).insert<bit_mask::from<0, 2>()>(0b010U);
     }
   }
 
@@ -185,7 +184,7 @@ void configure_clocks(clock_tree p_clock_tree)
   clock_configuration::reg().insert<clock_configuration::system_clock_select>(
     value(p_clock_tree.system_clock));
 
-  while (bit::extract<clock_configuration::system_clock_status>(
+  while (bit_extract<clock_configuration::system_clock_status>(
            clock_configuration::reg().get()) != target_clock_source) {
     continue;
   }
