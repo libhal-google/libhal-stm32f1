@@ -136,11 +136,11 @@ gpio_t& gpio(char p_port);
 
 inline alternative_function_io_t* alternative_function_io =
   reinterpret_cast<alternative_function_io_t*>(0x40010000);
-inline gpio_t* gpio_a = reinterpret_cast<gpio_t*>(0x40010800);
-inline gpio_t* gpio_b = reinterpret_cast<gpio_t*>(0x40010c00);
-inline gpio_t* gpio_c = reinterpret_cast<gpio_t*>(0x40011000);
-inline gpio_t* gpio_d = reinterpret_cast<gpio_t*>(0x40011400);
-inline gpio_t* gpio_e = reinterpret_cast<gpio_t*>(0x40011800);
-inline gpio_t* gpio_f = reinterpret_cast<gpio_t*>(0x40011c00);
-inline gpio_t* gpio_g = reinterpret_cast<gpio_t*>(0x40012000);
+inline gpio_t* gpio_a_reg = reinterpret_cast<gpio_t*>(0x40010800);
+inline gpio_t* gpio_b_reg = reinterpret_cast<gpio_t*>(0x40010c00);
+inline gpio_t* gpio_c_reg = reinterpret_cast<gpio_t*>(0x40011000);
+inline gpio_t* gpio_d_reg = reinterpret_cast<gpio_t*>(0x40011400);
+inline gpio_t* gpio_e_reg = reinterpret_cast<gpio_t*>(0x40011800);
+inline gpio_t* gpio_f_reg = reinterpret_cast<gpio_t*>(0x40011c00);
+inline gpio_t* gpio_g_reg = reinterpret_cast<gpio_t*>(0x40012000);
 }  // namespace hal::stm32f1

@@ -44,42 +44,42 @@ inline reset_and_clock_control_t* rcc =
 struct clock_configuration
 {
   /// Controls which clock signal is sent to the MCO pin
-  static constexpr auto mco = bit::mask::from<24, 26>();
+  static constexpr auto mco = bit_mask::from<24, 26>();
 
   /// Sets the USB clock divider
-  static constexpr auto usb_prescalar = bit::mask::from<22>();
+  static constexpr auto usb_prescalar = bit_mask::from<22>();
 
   /// Sets the PLL multiplier
-  static constexpr auto pll_mul = bit::mask::from<18, 21>();
+  static constexpr auto pll_mul = bit_mask::from<18, 21>();
 
   /// If set to 1, will divide the HSE signal by 2 before sending to PLL
-  static constexpr auto hse_pre_divider = bit::mask::from<17>();
+  static constexpr auto hse_pre_divider = bit_mask::from<17>();
 
   /// Sets which source the PLL will take as input
-  static constexpr auto pll_source = bit::mask::from<16>();
+  static constexpr auto pll_source = bit_mask::from<16>();
 
   /// Sets the clock divider for the ADC peripherals
-  static constexpr auto adc_divider = bit::mask::from<14, 15>();
+  static constexpr auto adc_divider = bit_mask::from<14, 15>();
 
   /// Sets the divider for peripherals on the APB2 bus
-  static constexpr auto apb_2_divider = bit::mask::from<11, 13>();
+  static constexpr auto apb_2_divider = bit_mask::from<11, 13>();
 
   /// Sets the divider for peripherals on the APB1 bus
-  static constexpr auto apb_1_divider = bit::mask::from<8, 10>();
+  static constexpr auto apb_1_divider = bit_mask::from<8, 10>();
 
   /// Sets the divider for peripherals on the AHB bus
-  static constexpr auto ahb_divider = bit::mask::from<4, 7>();
+  static constexpr auto ahb_divider = bit_mask::from<4, 7>();
 
   /// Used to check if the system clock has taken the new system clock
   /// settings.
-  static constexpr auto system_clock_status = bit::mask::from<2, 3>();
+  static constexpr auto system_clock_status = bit_mask::from<2, 3>();
 
   /// Set which clock will be used for the system clock.
-  static constexpr auto system_clock_select = bit::mask::from<0, 1>();
+  static constexpr auto system_clock_select = bit_mask::from<0, 1>();
 
   static auto reg()
   {
-    return hal::bit::modify(rcc->cfgr);
+    return hal::bit_modify(rcc->cfgr);
   }
 };
 
@@ -87,17 +87,17 @@ struct clock_configuration
 struct clock_control
 {
   /// Indicates if the PLL is enabled and ready
-  static constexpr auto pll_ready = bit::mask::from<25>();
+  static constexpr auto pll_ready = bit_mask::from<25>();
   /// Used to enable the PLL
-  static constexpr auto pll_enable = bit::mask::from<24>();
+  static constexpr auto pll_enable = bit_mask::from<24>();
   /// Indicates if the external oscillator is ready for use
-  static constexpr auto external_osc_ready = bit::mask::from<17>();
+  static constexpr auto external_osc_ready = bit_mask::from<17>();
   /// Used to enable the external oscillator
-  static constexpr auto external_osc_enable = bit::mask::from<16>();
+  static constexpr auto external_osc_enable = bit_mask::from<16>();
 
   static auto reg()
   {
-    return hal::bit::modify(rcc->cr);
+    return hal::bit_modify(rcc->cr);
   }
 };
 
@@ -105,19 +105,19 @@ struct clock_control
 struct rtc_register
 {
   /// Will reset all clock states for the RTC
-  static constexpr auto backup_domain_reset = bit::mask::from<16>();
+  static constexpr auto backup_domain_reset = bit_mask::from<16>();
   /// Enables the RTC clock
-  static constexpr auto rtc_enable = bit::mask::from<15>();
+  static constexpr auto rtc_enable = bit_mask::from<15>();
   /// Selects the clock source for the RTC
-  static constexpr auto rtc_source_select = bit::mask::from<8, 9>();
+  static constexpr auto rtc_source_select = bit_mask::from<8, 9>();
   /// Indicates if the LSE is ready for use
-  static constexpr auto low_speed_osc_ready = bit::mask::from<1>();
+  static constexpr auto low_speed_osc_ready = bit_mask::from<1>();
   /// Used to enable the LSE
-  static constexpr auto low_speed_osc_enable = bit::mask::from<0>();
+  static constexpr auto low_speed_osc_enable = bit_mask::from<0>();
 
   static auto reg()
   {
-    return hal::bit::modify(rcc->bdcr);
+    return hal::bit_modify(rcc->bdcr);
   }
 };
 }  // namespace hal::stm32f1

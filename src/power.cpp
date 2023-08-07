@@ -49,15 +49,14 @@ power::power(peripheral p_peripheral)
 void power::on()
 {
   if (m_enable_register) {
-    hal::bit::modify(*m_enable_register).set(bit::mask::from(m_bit_position));
+    hal::bit_modify(*m_enable_register).set(bit_mask::from(m_bit_position));
   }
 }
 
 bool power::is_on()
 {
   if (m_enable_register) {
-    return hal::bit::extract(bit::mask::from(m_bit_position),
-                             *m_enable_register);
+    return hal::bit_extract(bit_mask::from(m_bit_position), *m_enable_register);
   }
   return true;
 }
@@ -65,7 +64,7 @@ bool power::is_on()
 void power::off()
 {
   if (m_enable_register) {
-    hal::bit::modify(*m_enable_register).clear(bit::mask::from(m_bit_position));
+    hal::bit_modify(*m_enable_register).clear(bit_mask::from(m_bit_position));
   }
 }
 }  // namespace hal::stm32f1

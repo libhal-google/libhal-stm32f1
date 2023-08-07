@@ -26,7 +26,7 @@ namespace hal::stm32f1 {
 namespace {
 /// Returns a bit mask indicating where the config bits are in the config
 /// registers.
-bit::mask mask(std::uint8_t p_pin)
+bit_mask mask(std::uint8_t p_pin)
 {
   return {
     .position = static_cast<uint32_t>((p_pin * 4) % 32),
@@ -43,12 +43,6 @@ volatile uint32_t& config_register(char p_port, std::uint8_t p_pin)
   }
   return gpio(p_port).crh;
 }
-
-/// @return the 4 bits of this ports config.
-uint32_t config(char p_port, std::uint8_t p_pin)
-{
-  return bit::extract(mask(p_pin), config_register(p_port, p_pin));
-}
 }  // namespace
 
 gpio_t& gpio(char p_port)
@@ -57,19 +51,19 @@ gpio_t& gpio(char p_port)
 
   switch (p_port) {
     case 'A':
-      return *gpio_a;
+      return *gpio_a_reg;
     case 'B':
-      return *gpio_b;
+      return *gpio_b_reg;
     case 'C':
-      return *gpio_c;
+      return *gpio_c_reg;
     case 'D':
-      return *gpio_d;
+      return *gpio_d_reg;
     case 'E':
-      return *gpio_e;
+      return *gpio_e_reg;
     case 'F':
-      return *gpio_f;
+      return *gpio_f_reg;
     case 'G':
-      return *gpio_g;
+      return *gpio_g_reg;
     default:
       return out_of_bounds_result;
   }
@@ -77,17 +71,17 @@ gpio_t& gpio(char p_port)
 
 void configure_pin(char p_port, std::uint8_t p_pin, pin_config_t p_config)
 {
-  constexpr auto cnf1 = bit::mask::from<3>();
-  constexpr auto cnf0 = bit::mask::from<2>();
-  constexpr auto mode = bit::mask::from<0, 1>();
+  constexpr auto cnf1 = bit_mask::from<3>();
+  constexpr auto cnf0 = bit_mask::from<2>();
+  constexpr auto mode = bit_mask::from<0, 1>();
 
-  auto config = bit::value<std::uint32_t>(0)
+  auto config = bit_value<std::uint32_t>(0)
                   .insert<cnf1>(p_config.CNF1)
                   .insert<cnf0>(p_config.CNF0)
                   .insert<mode>(p_config.MODE)
                   .get();
 
-  config_register(p_port, p_pin) = bit::modify(config_register(p_port, p_pin))
+  config_register(p_port, p_pin) = bit_modify(config_register(p_port, p_pin))
                                      .insert(mask(p_pin), config)
                                      .to<std::uint32_t>();
 }
@@ -97,7 +91,7 @@ void release_jtag_pins()
   // Ensure that AFIO is powered on before attempting to access it
   power(peripheral::afio).on();
   // Set the JTAG Release code
-  bit::modify(alternative_function_io->mapr)
-    .insert<bit::mask::from<24, 26>()>(0b010U);
+  bit_modify(alternative_function_io->mapr)
+    .insert<bit_mask::from<24, 26>()>(0b010U);
 }
 }  // namespace hal::stm32f1
