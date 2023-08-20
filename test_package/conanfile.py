@@ -19,8 +19,8 @@ from conan.tools.cmake import CMake, cmake_layout
 
 
 class TestPackageConan(ConanFile):
-    settings = "os", "compiler", "build_type"
-    generators = "CMakeToolchain", "CMakeDeps"
+    settings = "os", "compiler", "build_type", "arch"
+    generators = "CMakeToolchain", "CMakeDeps", "VirtualRunEnv"
 
     @property
     def _bare_metal(self):

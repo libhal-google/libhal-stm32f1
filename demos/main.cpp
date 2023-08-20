@@ -12,18 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <sys/stat.h>
-#include <unistd.h>
-
-#include <libhal-armcortex/startup.hpp>
 #include <libhal-armcortex/system_control.hpp>
 #include <libhal/error.hpp>
-
-#include <cinttypes>
-#include <cstdarg>
-#include <cstdint>
-#include <cstdio>
-#include <cstring>
 
 // Application function must be implemented by one of the compilation units
 // (.cpp) files.
