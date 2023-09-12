@@ -32,17 +32,7 @@ hal::status application()
   const auto cpu_frequency = clock.get_frequency(hal::stm32f1::peripheral::cpu);
   hal::cortex_m::dwt_counter steady_clock(cpu_frequency);
 
-  // std::array<hal::byte, 32> uart_buffer{};
-  // auto uart0 = HAL_CHECK(hal::stm32f1::uart::get(0,
-  //                                              uart_buffer,
-  //                                              hal::serial::settings{
-  //                                                .baud_rate = 38400.0f,
-  //                                              }));
-
   auto spi1 = HAL_CHECK(hal::stm32f1::spi::get(1));
-  auto chip_select = HAL_CHECK(hal::stm32f1::output_pin::get(1, 10));
-  auto chip_select_mirror = HAL_CHECK(hal::stm32f1::output_pin::get(1, 14));
-  HAL_CHECK(chip_select.level(true));
 
   // hal::print(uart0, "Starting SPI Application...\n");
 
