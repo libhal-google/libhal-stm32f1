@@ -19,11 +19,12 @@
 #include <libhal-armcortex/interrupt.hpp>
 #include <libhal-stm32f1/clock.hpp>
 #include <libhal-stm32f1/constants.hpp>
-#include <libhal-stm32f1/power.hpp>
 #include <libhal-util/bit.hpp>
 #include <libhal-util/spi.hpp>
 #include <libhal-util/static_callable.hpp>
 
+#include "power.hpp"
+#include "pin.hpp"
 #include "spi_reg.hpp"
 
 namespace hal::stm32f1 {
@@ -136,19 +137,19 @@ status spi::driver_configure(const settings& p_settings)
   //    set the SSM and SSI bits in the SPI_CR1 register. If the NSS pin is required in output
   //    mode, the SSOE bit only should be set.
   bit_modify(reg->cr1)
-    .set(control_register1::ssm_bit)()
-    .set(control_register1::ssi_bit)();
+    .set<control_register1::ssm_bit>()
+    .set<control_register1::ssi_bit>();
 
   // Initialize SPI pins
-  configure_pin(m_info.clk_port, m_info.clk_pin, pin::push_pull_gpio_output);
-  configure_pin(m_info.miso_port, m_info.miso_pin, pin::push_pull_gpio_output);
-  configure_pin(m_info.mosi_port, m_info.mosi_pin, pin::push_pull_gpio_output);
+  configure_pin(m_info.clk_port, m_info.clk_pin, push_pull_gpio_output);
+  configure_pin(m_info.miso_port, m_info.miso_pin, push_pull_gpio_output);
+  configure_pin(m_info.mosi_port, m_info.mosi_pin, push_pull_gpio_output);
 
   // 6. Set MSTR and SPE bits (they remain set only if the NSS pin is connected
   //    to a high-level signal).
   bit_modify(reg->cr1)
-    .set(control_register1::master_select_bit)()
-    .set(control_register1::spi_enable_bit)();
+    .set<control_register1::master_select_bit>()
+    .set<control_register1::spi_enable_bit>();
 
   return hal::success();
 }

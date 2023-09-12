@@ -24,7 +24,8 @@ add_library(libhal-stm32f1
   src/power.cpp
   src/clock.cpp
   src/pin.cpp
-  src/output_pin.cpp)
+  src/output_pin.cpp
+  src/spi.cpp)
 
 target_include_directories(libhal-stm32f1 PUBLIC include)
 target_compile_features(libhal-stm32f1 PRIVATE cxx_std_20)

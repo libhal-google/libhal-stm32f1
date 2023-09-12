@@ -34,16 +34,18 @@ public:
     peripheral peripheral_id;
     /// spi clock port
     char clk_port;
-    /// spi MOSI port
-    char mosi_port;
-    /// spi MISO port
-    char miso_port;
     /// spi clock pin
     std::uint8_t clk_pin;
-    /// spi MOSI pin
-    std::uint8_t mosi_pin;
+
+    /// spi MISO port
+    char miso_port;
     /// spi MISO pin
     std::uint8_t miso_pin;
+
+    /// spi MOSI port
+    char mosi_port;
+    /// spi MOSI pin
+    std::uint8_t mosi_pin;
   };
 
   static result<spi> get(std::uint8_t p_bus,

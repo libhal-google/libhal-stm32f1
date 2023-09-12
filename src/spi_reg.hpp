@@ -28,7 +28,7 @@ struct spi_reg_t
   /*!< Offset: 0x008 Status Register (R/ ) */
   volatile uint32_t sr;
   /*!< Offset: 0x00C Data Register (R/W) */
-  const volatile uint32_t dr;
+  volatile uint32_t dr;
 };
 
 // SPI Control Register 1 (SPI_CR1)
@@ -113,7 +113,7 @@ struct control_register1
   //   0: 2-line unidirectional data mode selected
   //   1: 1-line bidirectional data mode selected
   static constexpr auto bidimode_bit = bit_mask::from<15>();
-}
+};
 
 // SPI Control Register 2 (SPI_CR2)
 struct control_register2
@@ -150,7 +150,7 @@ struct control_register2
   //   0: TXE interrupt masked
   //   1: TXE interrupt not masked. Used to generate an interrupt request when the TXE flag is set.
   static constexpr auto tx_empty_interrupt_enable_bit = bit_mask::from<7>();
-}
+};
 
 /// SPI Status Register (SPI_SR)
 struct status_register
