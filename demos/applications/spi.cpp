@@ -19,7 +19,7 @@
 #include <libhal-stm32f1/constants.hpp>
 #include <libhal-stm32f1/output_pin.hpp>
 #include <libhal-stm32f1/spi.hpp>
-#include <libhal-stm32f1/uart.hpp>
+// #include <libhal-stm32f1/uart.hpp>
 #include <libhal-util/serial.hpp>
 #include <libhal-util/spi.hpp>
 #include <libhal-util/steady_clock.hpp>
@@ -28,8 +28,7 @@ hal::status application()
 {
   using namespace hal::literals;
 
-  auto& clock = hal::stm32f1::clock::get();
-  const auto cpu_frequency = clock.get_frequency(hal::stm32f1::peripheral::cpu);
+  auto cpu_frequency = hal::stm32f1::frequency(hal::stm32f1::peripheral::cpu);
   hal::cortex_m::dwt_counter steady_clock(cpu_frequency);
 
   auto spi1 = HAL_CHECK(hal::stm32f1::spi::get(1));
@@ -65,11 +64,11 @@ hal::status application()
       std::array read_manufacturer_id{ hal::byte{ 0x9F } };
       std::array<hal::byte, 4> id_data{};
 
-      HAL_CHECK(chip_select.level(false));
+      // HAL_CHECK(chip_select.level(false));
       hal::delay(steady_clock, 250ns);
       HAL_CHECK(
         hal::write_then_read(spi1, read_manufacturer_id, id_data, 0xA5));
-      HAL_CHECK(chip_select.level(true));
+      // HAL_CHECK(chip_select.level(true));
 
       // hal::print(uart0, "SPI Flash Memory ID info: ");
       // hal::print(uart0, "[ ");
