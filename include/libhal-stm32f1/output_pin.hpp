@@ -35,12 +35,14 @@ public:
    * @return result<output_pin> - reference to the statically allocated output
    * pin
    */
-  static result<output_pin> get(std::uint8_t p_port,
-                                std::uint8_t p_pin,
+  static result<output_pin> get(std::uint8_t p_port,  // NOLINT
+                                std::uint8_t p_pin,   // NOLINT
                                 output_pin::settings p_settings = {});
 
 private:
-  output_pin(std::uint8_t p_port, std::uint8_t p_pin);
+  output_pin(std::uint8_t p_port,  // NOLINT
+             std::uint8_t p_pin    // NOLINT
+  );
 
   status driver_configure(const settings& p_settings) override;
   result<set_level_t> driver_level(bool p_high) override;

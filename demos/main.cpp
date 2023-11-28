@@ -33,7 +33,7 @@ int main()
 }
 
 namespace boost {
-void throw_exception(std::exception const& e)
+void throw_exception(std::exception const&)
 {
   hal::halt();
 }

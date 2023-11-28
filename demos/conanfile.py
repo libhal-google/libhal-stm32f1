@@ -36,10 +36,10 @@ class demos(ConanFile):
 
     def build_requirements(self):
         self.tool_requires("cmake/3.27.1")
-        self.tool_requires("libhal-cmake-util/1.0.0")
+        self.tool_requires("libhal-cmake-util/3.0.1")
 
     def requirements(self):
-        self.requires("libhal-stm32f1/2.0.3")
+        self.requires("libhal-stm32f1/2.0.5")
 
     def build(self):
         cmake = CMake(self)

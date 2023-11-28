@@ -22,7 +22,7 @@
 
 namespace hal::stm32f1 {
 namespace {
-volatile uint32_t* enable(int p_bus_index)
+volatile uint32_t* enable(std::uint32_t p_bus_index)
 {
   switch (p_bus_index) {
     case 0:
