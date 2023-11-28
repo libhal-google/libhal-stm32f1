@@ -50,7 +50,9 @@ result<output_pin> output_pin::get(std::uint8_t p_port,
   return gpio;
 }
 
-output_pin::output_pin(std::uint8_t p_port, std::uint8_t p_pin)
+output_pin::output_pin(std::uint8_t p_port,  // NOLINT
+                       std::uint8_t p_pin    // NOLINT
+                       )
   : m_port(p_port)
   , m_pin(p_pin)
 {
@@ -59,9 +61,9 @@ output_pin::output_pin(std::uint8_t p_port, std::uint8_t p_pin)
 status output_pin::driver_configure(const settings& p_settings)
 {
   if (!p_settings.open_drain) {
-    configure_pin(m_port, m_pin, push_pull_gpio_output);
+    configure_pin({ .port = m_port, .pin = m_pin }, push_pull_gpio_output);
   } else if (p_settings.open_drain) {
-    configure_pin(m_port, m_pin, open_drain_gpio_output);
+    configure_pin({ .port = m_port, .pin = m_pin }, open_drain_gpio_output);
   }
 
   return hal::success();

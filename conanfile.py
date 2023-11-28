@@ -26,7 +26,7 @@ required_conan_version = ">=2.0.6"
 
 class libhal_stm32f1_conan(ConanFile):
     name = "libhal-stm32f1"
-    version = "2.0.3"
+    version = "2.0.5"
     license = "Apache-2.0"
     url = "https://github.com/conan-io/conan-center-index"
     homepage = "https://libhal.github.io/libhal-stm32f1"
@@ -77,35 +77,22 @@ class libhal_stm32f1_conan(ConanFile):
             check_min_cppstd(self, self._min_cppstd)
 
     def build_requirements(self):
-        self.tool_requires("libhal-cmake-util/3.0.0")
+        self.tool_requires("cmake/3.27.1")
+        self.tool_requires("libhal-cmake-util/3.0.1")
         self.test_requires("boost-ext-ut/1.1.9")
 
     def requirements(self):
-        self.requires("libhal/[^2.0.0]")
-        self.requires("libhal-util/[^3.0.0]")
-        self.requires("libhal-armcortex/[^2.0.3]")
+        self.requires("libhal/[^2.0.3]", transitive_headers=True)
+        self.requires("libhal-util/[^3.0.1]")
+        self.requires("libhal-armcortex/[^2.2.1]")
 
     def layout(self):
         cmake_layout(self)
 
     def build(self):
-        run_test = not self.conf.get("tools.build:skip_test", default=False)
-
         cmake = CMake(self)
-        if self.settings.os == "Windows":
-            cmake.configure()
-        elif self._bare_metal:
-            cmake.configure(variables={
-                "BUILD_TESTING": "OFF"
-            })
-        else:
-            cmake.configure(variables={"ENABLE_ASAN": True})
-
+        cmake.configure()
         cmake.build()
-
-        if run_test and not self._bare_metal:
-            test_folder = os.path.join("tests")
-            self.run(os.path.join(test_folder, "unit_test"))
 
     def package(self):
         copy(self,

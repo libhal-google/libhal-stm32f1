@@ -61,6 +61,18 @@ struct pin_config_t
   std::uint8_t PxODR;
 };
 
+/**
+ * @brief Pin select structure
+ *
+ */
+struct pin_select_t
+{
+  /// @brief Port letter, must be a capitol letter from 'A' to 'G'
+  std::uint8_t port;
+  /// @brief Pin number, must be between 0 to 15
+  std::uint8_t pin;
+};
+
 static constexpr pin_config_t push_pull_gpio_output = {
   .CNF1 = 0,
   .CNF0 = 0,
@@ -120,11 +132,10 @@ static constexpr pin_config_t input_pull_up = {
 /**
  * @brief Construct pin manipulation object
  *
- * @param p_port - Port letter, must be a capitol letter from 'A' to 'G'
- * @param p_pin - Pin number, must be between 0 to 15
+ * @param p_pin_select - the pin to configure
  * @param p_config - Configuration to set the pin to
  */
-void configure_pin(char p_port, std::uint8_t p_pin, pin_config_t p_config);
+void configure_pin(pin_select_t p_pin_select, pin_config_t p_config);
 
 /**
  * @brief Returns the gpio register based on the port
@@ -132,15 +143,15 @@ void configure_pin(char p_port, std::uint8_t p_pin, pin_config_t p_config);
  * @param p_port - port letter, must be from 'A' to 'G'
  * @return gpio_t& - gpio register map
  */
-gpio_t& gpio(char p_port);
+gpio_t& gpio(std::uint8_t p_port);
 
 inline alternative_function_io_t* alternative_function_io =
-  reinterpret_cast<alternative_function_io_t*>(0x40010000);
-inline gpio_t* gpio_a_reg = reinterpret_cast<gpio_t*>(0x40010800);
-inline gpio_t* gpio_b_reg = reinterpret_cast<gpio_t*>(0x40010c00);
-inline gpio_t* gpio_c_reg = reinterpret_cast<gpio_t*>(0x40011000);
-inline gpio_t* gpio_d_reg = reinterpret_cast<gpio_t*>(0x40011400);
-inline gpio_t* gpio_e_reg = reinterpret_cast<gpio_t*>(0x40011800);
-inline gpio_t* gpio_f_reg = reinterpret_cast<gpio_t*>(0x40011c00);
-inline gpio_t* gpio_g_reg = reinterpret_cast<gpio_t*>(0x40012000);
+  reinterpret_cast<alternative_function_io_t*>(0x4001'0000);
+inline gpio_t* gpio_a_reg = reinterpret_cast<gpio_t*>(0x4001'0800);
+inline gpio_t* gpio_b_reg = reinterpret_cast<gpio_t*>(0x4001'0c00);
+inline gpio_t* gpio_c_reg = reinterpret_cast<gpio_t*>(0x4001'1000);
+inline gpio_t* gpio_d_reg = reinterpret_cast<gpio_t*>(0x4001'1400);
+inline gpio_t* gpio_e_reg = reinterpret_cast<gpio_t*>(0x4001'1800);
+inline gpio_t* gpio_f_reg = reinterpret_cast<gpio_t*>(0x4001'1c00);
+inline gpio_t* gpio_g_reg = reinterpret_cast<gpio_t*>(0x4001'2000);
 }  // namespace hal::stm32f1

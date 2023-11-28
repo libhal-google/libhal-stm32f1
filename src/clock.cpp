@@ -132,8 +132,8 @@ void configure_clocks(clock_tree p_clock_tree)
     }
 
     // Multiply the PLL clock up to the correct rate.
-    m_pll_clock_rate =
-      m_pll_clock_rate * (value(p_clock_tree.pll.multiply) + 2);
+    float multiply = value(p_clock_tree.pll.multiply);
+    m_pll_clock_rate = m_pll_clock_rate * (multiply + 2.0f);
   }
 
   // =========================================================================

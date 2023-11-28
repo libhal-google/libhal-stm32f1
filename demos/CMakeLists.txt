@@ -14,33 +14,16 @@
 
 cmake_minimum_required(VERSION 3.20)
 
-# Set project name to demos
-project(demos VERSION 0.0.1 LANGUAGES CXX)
+project(demos LANGUAGES CXX)
 
-# Import the libhal-stm32f1 library/package (and all of its dependencies)
-find_package(libhal-stm32f1 REQUIRED CONFIG)
+libhal_build_demos(
+  DEMOS
+  blinker
+  systick_timer
 
-# List of demo applications
-# To add a new demo to the list, simply add its filename without the .cpp
-# extension to this list.
-set(DEMOS blinker systick_timer)
+  PACKAGES
+  libhal-stm32f1
 
-add_library(startup_code main.cpp)
-target_compile_options(startup_code PRIVATE -g)
-target_link_libraries(startup_code PRIVATE libhal::stm32f1)
-
-foreach(demo IN LISTS DEMOS)
-    set(current_project ${demo}.elf)
-    message(STATUS "Generating Demo for \"${current_project}\"")
-    add_executable(${current_project} applications/${demo}.cpp)
-
-    target_compile_features(${current_project} PRIVATE cxx_std_20)
-    target_compile_options(${current_project} PRIVATE -g)
-    target_link_options(${current_project} PRIVATE
-        --oslib=semihost --crt0=minimal)
-    target_link_libraries(${current_project} PRIVATE
-        startup_code
-        libhal::stm32f1)
-
-    libhal_post_build(${current_project})
-endforeach()
+  LINK_LIBRARIES
+  libhal::stm32f1
+)

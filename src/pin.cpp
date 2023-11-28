@@ -36,16 +36,16 @@ bit_mask mask(std::uint8_t p_pin)
 
 /// Returns the configuration control register for the specific pin.
 /// Pins 0 - 7 are in CRL and Pins 8 - 15 are in CRH.
-volatile uint32_t& config_register(char p_port, std::uint8_t p_pin)
+volatile uint32_t& config_register(const pin_select_t& p_pin_select)
 {
-  if (p_pin <= 7) {
-    return gpio(p_port).crl;
+  if (p_pin_select.pin <= 7) {
+    return gpio(p_pin_select.port).crl;
   }
-  return gpio(p_port).crh;
+  return gpio(p_pin_select.port).crh;
 }
 }  // namespace
 
-gpio_t& gpio(char p_port)
+gpio_t& gpio(std::uint8_t p_port)
 {
   static gpio_t out_of_bounds_result{};
 
@@ -69,7 +69,7 @@ gpio_t& gpio(char p_port)
   }
 };
 
-void configure_pin(char p_port, std::uint8_t p_pin, pin_config_t p_config)
+void configure_pin(pin_select_t p_pin_select, pin_config_t p_config)
 {
   constexpr auto cnf1 = bit_mask::from<3>();
   constexpr auto cnf0 = bit_mask::from<2>();
@@ -81,9 +81,9 @@ void configure_pin(char p_port, std::uint8_t p_pin, pin_config_t p_config)
                   .insert<mode>(p_config.MODE)
                   .get();
 
-  config_register(p_port, p_pin) = bit_modify(config_register(p_port, p_pin))
-                                     .insert(mask(p_pin), config)
-                                     .to<std::uint32_t>();
+  config_register(p_pin_select) = bit_modify(config_register(p_pin_select))
+                                    .insert(mask(p_pin_select.pin), config)
+                                    .to<std::uint32_t>();
 }
 
 void release_jtag_pins()
